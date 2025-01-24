@@ -36,11 +36,11 @@ export const getAllFiles = async (_req: Request, res: Response) => {
 };
 
 export const getUserFiles = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
   try {
     const files = await prisma.file.findMany({
-      where: { userId: id },
+      where: { userId },
       select: {
         id: true,
         userId: false,
@@ -92,7 +92,7 @@ export const getFileById = async (req: Request, res: Response) => {
   }
 };
 
-export const createFile = async (req: Request, res: Response) => {
+export const uploadFile = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   try {
@@ -127,9 +127,46 @@ export const createFile = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json({ message: "File created successfully.", newFile });
+    res.status(201).json({ message: "File uploaded successfully.", newFile });
   } catch (error) {
     console.error("Error uploading file:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+export const removeFile = async (req: Request, res: Response) => {
+  const { id, userId } = req.params;
+
+  try {
+    const file = await prisma.file.findUnique({
+      where: { id },
+      select: {
+        id: false,
+        userId: false,
+        fileName: true,
+        fileType: false,
+        fileSize: false,
+        s3Url: false,
+      },
+    });
+
+    if (!file) {
+      return res.status(404).json({ message: "File not found." });
+    }
+
+    const bucketParams = {
+      Bucket: bucket,
+      Key: `${userId}/${file.fileName}`,
+    };
+
+    await s3.deleteObject(bucketParams).promise();
+    await prisma.file.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: "File removed successfully." });
+  } catch (error) {
+    console.error("Error deleting file:", error);
     res.status(500).json({ message: "Server Error", error });
   }
 };
