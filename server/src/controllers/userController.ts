@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { z } from "zod";
-import { createUserSchemaEmail, createUserSchemaPassword, updateUserSchema } from "../schema/userSchema";
+import {
+  createUserSchemaEmail,
+  createUserSchemaPassword,
+  updateUserSchema,
+} from "../schema/userSchema";
 
 const prisma = new PrismaClient();
 const saltRounds = 10;
@@ -48,24 +52,33 @@ export const createUser = async (req: Request, res: any) => {
   const { email, password } = req.body;
   const parsedEmail = createUserSchemaEmail.safeParse({ email });
   const parsedPassword = createUserSchemaPassword.safeParse({ password });
-  
+
   if (!parsedEmail.success) {
-    return res.status(500).json({ message: "Error when converting email to zod." })
+    return res
+      .status(500)
+      .json({ message: "Error when converting email to zod." });
   }
 
   if (!parsedPassword.success) {
-    return res.status(500).json({ message: "Error when converting password to zod." })
+    return res
+      .status(500)
+      .json({ message: "Error when converting password to zod." });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(parsedPassword.data.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      parsedPassword.data.password,
+      saltRounds
+    );
 
     const existingUser = await prisma.user.findUnique({
-      where: { email: parsedEmail.data.email}
-    })
+      where: { email: parsedEmail.data.email },
+    });
 
     if (existingUser) {
-      return res.status(400).json({ message: "A user already exists under this email." })
+      return res
+        .status(400)
+        .json({ message: "A user already exists under this email." });
     }
 
     const user = await prisma.user.create({
@@ -90,15 +103,31 @@ export const updateUser = async (req: Request, res: any) => {
   const parsedEmail = updateUserSchema.safeParse({ email });
 
   if (!parsedEmail.success) {
-    return res.status(500).json({ message: "Error when converting email to zod." })   
+    return res
+      .status(500)
+      .json({ message: "Error when converting email to zod." });
   }
   try {
     const user = await prisma.user.findUnique({
       where: { id },
     });
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser?.email === parsedEmail.data.email) {
+      return res
+        .status(500)
+        .json({ message: "An error occured, please try again later." });
+    }
+
     if (user?.email === parsedEmail.data.email) {
-      return res.status(500).json({ message: "You can not change your current email to your new one." })
+      return res
+        .status(500)
+        .json({
+          message: "You can not change your current email to your new one.",
+        });
     }
     if (!user) {
       return res.status(404).json({ message: "User not found with this ID." });
@@ -134,11 +163,11 @@ export const deleteUser = async (req: Request, res: any) => {
 
     if (!user) {
       return res.status(404).json({ message: "No user found with this ID." });
-    };
+    }
     await prisma.user.delete({
-      where: { id }
+      where: { id },
     });
-    res.json({ message: "User deleted successfully." })
+    res.json({ message: "User deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
