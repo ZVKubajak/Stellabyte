@@ -63,7 +63,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: any) => {
   const { id } = req.params;
   const { email } = updateUserSchema.parse(req.body);
   try {
