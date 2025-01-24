@@ -11,7 +11,7 @@ import {
 const prisma = new PrismaClient();
 const saltRounds = 10;
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       select: {
