@@ -10,8 +10,9 @@ const prisma = new PrismaClient();
 const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
 
-const idSchema = z.string();
-const userIdSchema = z.string();
+// The length of MongoDB strings are 24 characters.
+const idSchema = z.string().length(24);
+const userIdSchema = z.string().length(24);
 
 export const getAllFiles = async (_req: Request, res: Response) => {
   try {
@@ -42,15 +43,15 @@ export const getAllFiles = async (_req: Request, res: Response) => {
 export const getUserFiles = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
-  const parsedUserId = userIdSchema.safeParse(userId);
-  console.log(parsedUserId);
-
-  if (!parsedUserId.success) {
-    console.error(parsedUserId.error);
-    return;
-  }
-
   try {
+    const parsedUserId = userIdSchema.safeParse(userId);
+    if (!parsedUserId.success) {
+      console.error(parsedUserId.error);
+      return res
+        .status(400)
+        .json({ message: "Invalid userId Syntax:", parsedUserId });
+    }
+
     const files = await prisma.file.findMany({
       where: { userId: parsedUserId.data },
       select: {
@@ -80,15 +81,13 @@ export const getUserFiles = async (req: Request, res: Response) => {
 export const getFileById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const parsedId = idSchema.safeParse(id);
-  console.log(parsedId);
-
-  if (!parsedId.success) {
-    console.error(parsedId.error);
-    return;
-  }
-
   try {
+    const parsedId = idSchema.safeParse(id);
+    if (!parsedId.success) {
+      console.error(parsedId.error);
+      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+    }
+
     const file = await prisma.file.findUnique({
       where: { id: parsedId.data },
       select: {
@@ -115,17 +114,27 @@ export const getFileById = async (req: Request, res: Response) => {
 export const uploadFile = async (req: Request, res: any) => {
   const { userId } = req.body;
 
-  const parsedUserId = userIdSchema.safeParse(userId);
-  console.log(parsedUserId);
-
-  if (!parsedUserId.success) {
-    console.error(parsedUserId.error);
-    return;
-  }
-
   try {
+    const parsedUserId = userIdSchema.safeParse(userId);
+    if (!parsedUserId.success) {
+      console.error(parsedUserId.error);
+      return res
+        .status(400)
+        .json({ message: "Invalid userId Syntax:", parsedUserId });
+    }
+
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: parsedUserId.data },
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User by given userId not found." });
     }
 
     const bucketParams = {
@@ -166,18 +175,19 @@ export const removeFile = async (req: Request, res: any) => {
   const { id } = req.params;
   const { userId } = req.body;
 
-  const parsedId = idSchema.safeParse(id);
-  const parsedUserId = userIdSchema.safeParse(userId);
-
-  if (!parsedId.success) {
-    console.error(parsedId.error);
-    return;
-  } else if (!parsedUserId.success) {
-    console.error(parsedUserId.error);
-    return;
-  }
-
   try {
+    const parsedId = idSchema.safeParse(id);
+    const parsedUserId = userIdSchema.safeParse(userId);
+    if (!parsedId.success) {
+      console.error(parsedId.error);
+      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+    } else if (!parsedUserId.success) {
+      console.error(parsedUserId.error);
+      return res
+        .status(400)
+        .json({ message: "Invalid userId Syntax:", parsedUserId });
+    }
+
     const file = await prisma.file.findUnique({
       where: { id: parsedId.data },
       select: {
