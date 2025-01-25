@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { userEmailSchema, userPasswordSchema } from "../schema/userSchema";
-import { createUser } from "../controllers/userController";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { parse } from "path";
 
 dotenv.config();
 
@@ -14,14 +12,14 @@ interface JwtPayload {
   email: string;
 }
 
-interface AuthenticatedRequest extends Request {
-  user: JwtPayload;
-}
+// interface AuthenticatedRequest extends Request {
+//   user: JwtPayload;
+// }
 
 const secretKey = process.env.JWT_SECRET_KEY || "";
 
 export const authenticateToken = (
-  req: AuthenticatedRequest,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
@@ -30,7 +28,7 @@ export const authenticateToken = (
   if (authHeader) {
     const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, secretKey, (err, user) => {
+    jwt.verify(token, secretKey, (err: any, user: any) => {
       if (err) {
         console.error("Error verifying token", err);
         return res
@@ -98,7 +96,7 @@ export const signUp = async (req: Request, res: any) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: any) => {
   const { email, password } = req.body;
   try {
     const parsedEmail = userEmailSchema.safeParse({ email });
