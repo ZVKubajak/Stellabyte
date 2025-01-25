@@ -114,7 +114,7 @@ export const getFileById = async (req: Request, res: Response) => {
   }
 };
 
-export const uploadFile = async (req: Request, res: Response) => {
+export const uploadFile = async (req: Request, res: any) => {
   const { userId } = req.params;
 
   const parsedIds = fileControllerSchema.safeParse({ userId });
@@ -164,8 +164,9 @@ export const uploadFile = async (req: Request, res: Response) => {
   }
 };
 
-export const removeFile = async (req: Request, res: Response) => {
-  const { id, userId } = req.params;
+export const removeFile = async (req: Request, res: any) => {
+  const { id } = req.params;
+  const { userId } = req.body;
 
   const parsedIds = fileControllerSchema.safeParse({ id, userId });
   console.log(parsedIds);
