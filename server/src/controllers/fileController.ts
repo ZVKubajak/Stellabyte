@@ -10,10 +10,8 @@ const prisma = new PrismaClient();
 const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
 
-const fileControllerSchema = z.object({
-  id: z.string().optional(),
-  userId: z.string().optional(),
-});
+const idSchema = z.string();
+const userIdSchema = z.string();
 
 export const getAllFiles = async (_req: Request, res: Response) => {
   try {
@@ -44,17 +42,17 @@ export const getAllFiles = async (_req: Request, res: Response) => {
 export const getUserFiles = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
-  const parsedIds = fileControllerSchema.safeParse({ userId });
-  console.log(parsedIds);
+  const parsedUserId = userIdSchema.safeParse(userId);
+  console.log(parsedUserId);
 
-  if (!parsedIds.success) {
-    console.error(parsedIds.error);
+  if (!parsedUserId.success) {
+    console.error(parsedUserId.error);
     return;
   }
 
   try {
     const files = await prisma.file.findMany({
-      where: { userId: parsedIds.data.userId },
+      where: { userId: parsedUserId.data },
       select: {
         id: true,
         userId: false,
@@ -82,17 +80,17 @@ export const getUserFiles = async (req: Request, res: Response) => {
 export const getFileById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const parsedIds = fileControllerSchema.safeParse({ id });
-  console.log(parsedIds);
+  const parsedId = idSchema.safeParse(id);
+  console.log(parsedId);
 
-  if (!parsedIds.success) {
-    console.error(parsedIds.error);
+  if (!parsedId.success) {
+    console.error(parsedId.error);
     return;
   }
 
   try {
     const file = await prisma.file.findUnique({
-      where: { id: parsedIds.data.id },
+      where: { id: parsedId.data },
       select: {
         id: true,
         userId: false,
@@ -115,13 +113,13 @@ export const getFileById = async (req: Request, res: Response) => {
 };
 
 export const uploadFile = async (req: Request, res: any) => {
-  const { userId } = req.params;
+  const { userId } = req.body;
 
-  const parsedIds = fileControllerSchema.safeParse({ userId });
-  console.log(parsedIds);
+  const parsedUserId = userIdSchema.safeParse(userId);
+  console.log(parsedUserId);
 
-  if (!parsedIds.success) {
-    console.error(parsedIds.error);
+  if (!parsedUserId.success) {
+    console.error(parsedUserId.error);
     return;
   }
 
@@ -132,7 +130,7 @@ export const uploadFile = async (req: Request, res: any) => {
 
     const bucketParams = {
       Bucket: bucket,
-      Key: `${parsedIds.data.userId}/${req.file.originalname}`,
+      Key: `${parsedUserId.data}/${req.file.originalname}`,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
     };
@@ -141,7 +139,7 @@ export const uploadFile = async (req: Request, res: any) => {
 
     const newFile = await prisma.file.create({
       data: {
-        userId: parsedIds.data.userId,
+        userId: parsedUserId.data,
         fileName: req.file.originalname,
         fileType: req.file.mimetype,
         fileSize: req.file.size,
@@ -168,17 +166,20 @@ export const removeFile = async (req: Request, res: any) => {
   const { id } = req.params;
   const { userId } = req.body;
 
-  const parsedIds = fileControllerSchema.safeParse({ id, userId });
-  console.log(parsedIds);
+  const parsedId = idSchema.safeParse(id);
+  const parsedUserId = userIdSchema.safeParse(userId);
 
-  if (!parsedIds.success) {
-    console.error(parsedIds.error);
+  if (!parsedId.success) {
+    console.error(parsedId.error);
+    return;
+  } else if (!parsedUserId.success) {
+    console.error(parsedUserId.error);
     return;
   }
 
   try {
     const file = await prisma.file.findUnique({
-      where: { id: parsedIds.data.id },
+      where: { id: parsedId.data },
       select: {
         id: false,
         userId: false,
@@ -195,12 +196,12 @@ export const removeFile = async (req: Request, res: any) => {
 
     const bucketParams = {
       Bucket: bucket,
-      Key: `${parsedIds.data.userId}/${file.fileName}`,
+      Key: `${parsedUserId.data}/${file.fileName}`,
     };
 
     await s3.deleteObject(bucketParams).promise();
     await prisma.file.delete({
-      where: { id: parsedIds.data.id },
+      where: { id: parsedId.data },
     });
 
     res.status(200).json({ message: "File removed successfully." });
