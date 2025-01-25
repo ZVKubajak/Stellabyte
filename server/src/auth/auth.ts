@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { userEmailSchema, userPasswordSchema } from "../schema/userSchema";
+import { createUser } from "../controllers/userController";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { parse } from "path";
 
 dotenv.config();
 
@@ -15,6 +18,8 @@ interface AuthenticatedRequest extends Request {
   user: JwtPayload;
 }
 
+const secretKey = process.env.JWT_SECRET_KEY || "";
+
 export const authenticateToken = (
   req: AuthenticatedRequest,
   res: Response,
@@ -24,7 +29,6 @@ export const authenticateToken = (
 
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    const secretKey = process.env.JWT_SECRET_KEY || "";
 
     jwt.verify(token, secretKey, (err, user) => {
       if (err) {
@@ -42,5 +46,50 @@ export const authenticateToken = (
       status: "Unauthorized",
       message: "Authorization header is missing.",
     });
+  }
+};
+
+export const signUp = async (req: Request, res: any) => {
+  const { email, password } = req.body;
+
+  try {
+    const parsedEmail = userEmailSchema.safeParse({ email });
+    const parsedPassword = userPasswordSchema.safeParse({ password });
+
+    if (!parsedEmail.success) {
+      return res.status(400).json({ message: "Invalid email.", parsedEmail });
+    } else if (!parsedPassword.success) {
+      return res
+        .status(400)
+        .json({ message: "Invalid password.", parsedPassword });
+    }
+
+    await fetch("http://localhost:3001/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: parsedEmail.data.email,
+        password: parsedPassword.data.password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+
+        const token = jwt.sign(
+          { id: response.user.id, email: response.user.email },
+          secretKey,
+          { expiresIn: "7d" }
+        );
+
+        return res
+          .status(201)
+          .json({ message: "User created and signed in.", token });
+      });
+  } catch (error) {
+    console.error("Error signing up user:", error);
+    res.status(500).json({ message: "Server Error", error });
   }
 };

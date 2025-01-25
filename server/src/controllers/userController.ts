@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 import {
-  createUserSchemaEmail,
-  createUserSchemaPassword,
+  userEmailSchema,
+  userPasswordSchema,
   updateUserSchema,
 } from "../schema/userSchema";
 
@@ -50,8 +50,9 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: any) => {
   const { email, password } = req.body;
-  const parsedEmail = createUserSchemaEmail.safeParse({ email });
-  const parsedPassword = createUserSchemaPassword.safeParse({ password });
+
+  const parsedEmail = userEmailSchema.safeParse({ email });
+  const parsedPassword = userPasswordSchema.safeParse({ password });
 
   if (!parsedEmail.success) {
     return res
@@ -123,11 +124,9 @@ export const updateUser = async (req: Request, res: any) => {
     }
 
     if (user?.email === parsedEmail.data.email) {
-      return res
-        .status(500)
-        .json({
-          message: "You can not change your current email to your new one.",
-        });
+      return res.status(500).json({
+        message: "You can not change your current email to your new one.",
+      });
     }
     if (!user) {
       return res.status(404).json({ message: "User not found with this ID." });
