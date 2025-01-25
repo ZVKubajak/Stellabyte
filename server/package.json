@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run build && node dist/server.js --ignore client",
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
