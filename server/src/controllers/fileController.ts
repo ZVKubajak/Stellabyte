@@ -6,6 +6,12 @@ import { z } from "zod";
 
 dotenv.config();
 
+// Use res.sendStatus for all error responses.
+// Return a message and object for all successful responses.
+
+// If zod detects a message and object (successful), it will pass.
+// Else (error), it will be safe parsed so the error can be handled gracefully.
+
 const prisma = new PrismaClient();
 const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
@@ -19,11 +25,13 @@ export const getAllFiles = async (_req: Request, res: Response) => {
     const files = await prisma.file.findMany({
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
-        s3Url: false,
+        s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -56,11 +64,13 @@ export const getUserFiles = async (req: Request, res: any) => {
       where: { userId: parsedUserId.data },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -92,11 +102,13 @@ export const getFileById = async (req: Request, res: any) => {
       where: { id: parsedId.data },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -156,11 +168,13 @@ export const uploadFile = async (req: Request, res: any) => {
       },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -191,12 +205,14 @@ export const removeFile = async (req: Request, res: any) => {
     const file = await prisma.file.findUnique({
       where: { id: parsedId.data },
       select: {
-        id: false,
-        userId: false,
+        id: true,
+        userId: true,
         fileName: true,
-        fileType: false,
-        fileSize: false,
-        s3Url: false,
+        fileType: true,
+        fileSize: true,
+        s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
