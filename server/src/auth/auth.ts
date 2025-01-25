@@ -93,3 +93,40 @@ export const signUp = async (req: Request, res: any) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
+
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    const parsedEmail = userEmailSchema.safeParse({ email });
+    const parsedPassword = userPasswordSchema.safeParse({ password });
+
+    if (!parsedEmail.success) {
+      return res.status(400).json({ message: "Invalid email.", parsedEmail });
+    } else if (!parsedPassword.success) {
+      return res
+        .status(400)
+        .json({ message: "Invalid password.", parsedPassword });
+    }
+
+    const response = await fetch(
+      `http://localhost:3001/api/users/email/${parsedEmail.data.email}`
+    );
+
+    if (!response.ok) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const data = await response.json();
+
+    const token = jwt.sign(
+      { id: data.user.id, email: data.user.email },
+      secretKey,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({ message: "User logged in.", token });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
