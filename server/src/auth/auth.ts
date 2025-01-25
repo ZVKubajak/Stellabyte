@@ -64,7 +64,7 @@ export const signUp = async (req: Request, res: any) => {
         .json({ message: "Invalid password.", parsedPassword });
     }
 
-    await fetch("http://localhost:3001/api/users", {
+    const response = await fetch(`http://localhost:3001/api/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,21 +73,25 @@ export const signUp = async (req: Request, res: any) => {
         email: parsedEmail.data.email,
         password: parsedPassword.data.password,
       }),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
+    });
 
-        const token = jwt.sign(
-          { id: response.user.id, email: response.user.email },
-          secretKey,
-          { expiresIn: "7d" }
-        );
+    if (!response.ok) {
+      return res
+        .status(400)
+        .json({ message: "Unable to create user.", response });
+    }
 
-        return res
-          .status(201)
-          .json({ message: "User created and signed in.", token });
-      });
+    const data = await response.json();
+
+    const token = jwt.sign(
+      { id: data.user.id, email: data.user.email },
+      secretKey,
+      { expiresIn: "7d" }
+    );
+
+    return res
+      .status(201)
+      .json({ message: "User created and signed in.", token });
   } catch (error) {
     console.error("Error signing up user:", error);
     res.status(500).json({ message: "Server Error", error });
