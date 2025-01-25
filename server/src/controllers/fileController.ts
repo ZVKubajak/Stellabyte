@@ -40,7 +40,7 @@ export const getAllFiles = async (_req: Request, res: Response) => {
   }
 };
 
-export const getUserFiles = async (req: Request, res: Response) => {
+export const getUserFiles = async (req: Request, res: any) => {
   const { userId } = req.params;
 
   try {
@@ -78,7 +78,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
   }
 };
 
-export const getFileById = async (req: Request, res: Response) => {
+export const getFileById = async (req: Request, res: any) => {
   const { id } = req.params;
 
   try {
