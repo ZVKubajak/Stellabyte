@@ -1,22 +1,56 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import Section from "../components/Section";
 
 const Home = () => {
   return (
-    <div className="flex flex-row mt-[100px] mx-3">
-      <div className="flex flex-col items-start">
-        <h1 className="text-[whitesmoke] mb-3">
-          Cloud Storage for all your needs
-        </h1>
-        <button className="text-gray-300 border p-2 rounded-3xl cursor-pointer">
-          Get started
-        </button>
+    <div className="flex flex-col">
+      {/* first section */}
+      <div className="flex flex-row mt-[150px] justify-between items-center mx-3">
+        <div className="flex flex-col items-start">
+          <h1 className="text-[whitesmoke] mb-3">
+            Upload. Create. Illuminate Your Cloud Galaxy.
+          </h1>
+          <button className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer">
+            Get started
+          </button>
+        </div>
+        <div className="flex">
+          <FontAwesomeIcon
+            className="testing text-[100px] text-[#286386] drop-shadow-md opacity-80 blur-[0.5px]"
+            icon={faCloud}
+          />
+        </div>
       </div>
-      <div>
-        <FontAwesomeIcon
-          className="text-[100px] text-gray-400 drop-shadow-md opacity-80 blur-[0.5px]"
-          icon={faCloud}
-        />
+
+      {/* second section */}
+      <div className="mt-[60px]">
+        <div className="flex flex-col">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+            Up to 50MB
+          </h1>
+          <Section text="Our app offers 50MB of free cloud storage for your important files and star maps, ensuring a secure and efficient experience at no cost." />
+        </div>
+        <div className="flex flex-col mt-[80px]">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+            Cloud Storage
+          </h1>
+          <Section text="Access your files anytime, anywhere with secure cloud storage. Retrieve your data effortlessly, from any device." />
+        </div>
+        <div className="flex flex-col mt-[80px]">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+            Easy to use
+          </h1>
+          <Section text="Effortlessly store and access your files with our user-friendly cloud storage. Retrieve your data anytime, anywhere—simple, fast, and hassle-free." />
+        </div>
+      </div>
+
+      {/* third section */}
+      <div className="flex flex-col">
+        <h1 className="text-center text-[whitesmoke] text-[24px] mt-[80px] mb-[30px]">
+          Join now
+        </h1>
+        <button className="bg-">Join and Upload</button>
       </div>
     </div>
   );

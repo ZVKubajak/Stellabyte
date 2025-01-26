@@ -3,21 +3,35 @@ import { Cross as HamburgerCross } from "hamburger-react";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="m-3">
-      <header className="relative p-2 flex justify-between items-center">
-        <div className="absolute inset-0 rounded-2xl bg-[#29323c] opacity-70"></div>
+    <div className="m-3 z-999">
+      <header
+        className={`fixed top-3 w-[92%] flex flex-col justify-between items-center overflow-hidden rounded-2xl bg-[#13547a] transition-all duration-300 z-999 shadow-md ${
+          isOpen ? "h-64" : "h-16"
+        }`}
+      >
+        {/* Header content */}
+        <div className="w-full flex justify-between items-center p-2">
+          <h1 className="relative z-10 text-[whitesmoke] text-xl p-0 m-0">
+            Stellabyte
+          </h1>
+          <div className="relative z-10">
+            <HamburgerCross
+              toggled={isOpen}
+              toggle={setIsOpen}
+              color="whitesmoke"
+            />
+          </div>
+        </div>
 
-        <h1 className="relative z-10 text-[whitesmoke] text-xl p-0 m-0 opacity-100">
-          Stellabyte
-        </h1>
-
-        <div className="relative z-10 opacity-100 p-0 m-0">
-          <HamburgerCross
-            toggled={isOpen}
-            toggle={setIsOpen}
-            color="whitesmoke"
-          />
+        {/* Expandable content with box shadow */}
+        <div
+          className={`w-full flex-grow flex flex-col items-center justify-center text-[whitesmoke] z-999 transition-all duration-300 ${
+            isOpen ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {/* Add content here */}
         </div>
       </header>
     </div>
