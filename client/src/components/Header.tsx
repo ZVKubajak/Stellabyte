@@ -46,7 +46,9 @@ const Header = () => {
             isOpen ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* Add content here */}
+          <div onClick={() => authService.logout()}>
+            <h1>Log Out</h1>
+          </div>
         </div>
       </header>
     </div>
