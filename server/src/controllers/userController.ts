@@ -10,7 +10,7 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 const saltRounds = 10;
 
-export const getUsers = async (_req: Request, res: any) => {
+export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -24,26 +24,26 @@ export const getUsers = async (_req: Request, res: any) => {
 
     if (users.length === 0) {
       console.error("No users found.");
-      return res.sendStatus(404);
-    } else {
-      res
-        .status(200)
-        .json({ message: `${users.length} user(s) found.`, users });
+      res.status(404).json({ message: "No users found." });
+      return;
     }
+
+    res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching all users:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const getUserById = async (req: Request, res: any) => {
+export const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
     const parsedId = userIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     const user = await prisma.user.findUnique({
@@ -59,17 +59,18 @@ export const getUserById = async (req: Request, res: any) => {
 
     if (!user) {
       console.error("User not found.");
-      return res.sendStatus(404);
-    } else {
-      res.status(200).json({ message: "User found.", user });
+      res.status(404).json({ message: "User not found." });
+      return;
     }
+
+    res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user by ID:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const getUserByEmail = async (req: Request, res: any) => {
+export const getUserByEmail = async (req: Request, res: Response) => {
   const { email } = req.params;
 
   try {
@@ -77,7 +78,8 @@ export const getUserByEmail = async (req: Request, res: any) => {
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     const user = await prisma.user.findUnique({
@@ -93,17 +95,18 @@ export const getUserByEmail = async (req: Request, res: any) => {
 
     if (!user) {
       console.error("User not found.");
-      return res.sendStatus(404);
-    } else {
-      res.status(200).json({ message: "User found.", user });
+      res.status(404).json({ message: "User not found." });
+      return;
     }
+
+    res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user by email:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const createUser = async (req: Request, res: any) => {
+export const createUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
@@ -112,12 +115,14 @@ export const createUser = async (req: Request, res: any) => {
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     if (!parsedPassword.success) {
       console.error(parsedPassword.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(parsedPassword.data, saltRounds);
@@ -128,7 +133,10 @@ export const createUser = async (req: Request, res: any) => {
 
     if (existingUser) {
       console.error("A user with this email already exists.");
-      return res.sendStatus(400);
+      res
+        .status(400)
+        .json({ message: "A user with this email already exists." });
+      return;
     }
 
     const newUser = await prisma.user.create({
@@ -142,14 +150,14 @@ export const createUser = async (req: Request, res: any) => {
       },
     });
 
-    res.status(201).json({ message: "User created successfully.", newUser });
+    res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const updateUser = async (req: Request, res: any) => {
+export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { email } = req.body;
 
@@ -159,12 +167,14 @@ export const updateUser = async (req: Request, res: any) => {
 
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     const user = await prisma.user.findUnique({
@@ -173,12 +183,16 @@ export const updateUser = async (req: Request, res: any) => {
 
     if (!user) {
       console.error("User not found.");
-      return res.sendStatus(404);
+      res.status(404).json({ message: "User not found." });
+      return;
     }
 
     if (user.email === parsedEmail.data) {
       console.error("Provided email is already user's current email.");
-      return res.sendStatus(400);
+      res
+        .status(400)
+        .json({ message: "Provided email is already user's current email." });
+      return;
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -186,7 +200,8 @@ export const updateUser = async (req: Request, res: any) => {
     });
 
     if (existingUser?.email === parsedEmail.data) {
-      return res.sendStatus(403);
+      res.status(403).json({ message: "Provided email is already in use." });
+      return;
     }
 
     const updateData: any = {};
@@ -204,16 +219,14 @@ export const updateUser = async (req: Request, res: any) => {
       },
     });
 
-    res
-      .status(200)
-      .json({ message: "User updated successfully.", updatedUser });
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const deleteUser = async (req: Request, res: any) => {
+export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -221,7 +234,8 @@ export const deleteUser = async (req: Request, res: any) => {
 
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.sendStatus(400);
+      res.status(400).json({ message: "Parsing Error" });
+      return;
     }
 
     const user = await prisma.user.findUnique({
@@ -230,7 +244,8 @@ export const deleteUser = async (req: Request, res: any) => {
 
     if (!user) {
       console.error("User not found.");
-      return res.sendStatus(404);
+      res.status(404).json({ message: "User not found." });
+      return;
     }
 
     await prisma.user.delete({
@@ -240,6 +255,6 @@ export const deleteUser = async (req: Request, res: any) => {
     res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
     console.error("Error deleting user:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
