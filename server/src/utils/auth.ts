@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
 import { userEmailSchema, userPasswordSchema } from "../schema/userSchema";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -91,22 +92,25 @@ export const signUp = async (req: Request, res: any) => {
 };
 
 export const login = async (req: Request, res: any) => {
-  // const { email, password } = req.body;
+  const { email, password } = req.body;
 
-  // const user = await User.findOne({
-  //   where: { email },
-  // });
-  // if (!user) {
-  //   return res.status(401).json({ message: 'Authentication failed' });
-  // }
+  const parsedEmail = userEmailSchema.safeParse(email);
+  const parsedPassword = userPasswordSchema.safeParse(password);
 
-  // const passwordIsValid = await bcrypt.compare(password, user.password);
-  // if (!passwordIsValid) {
-  //   return res.status(401).json({ message: 'Authentication failed' });
-  // }
+  const user = await prisma.user.findUnique({
+    where: { email: parsedEmail.data },
+  });
+  if (!user) {
+    return res.status(401).json({ message: 'Authentication failed' });
+  }
 
-  // const secretKey = process.env.JWT_SECRET_KEY || '';
+  const passwordIsValid = parsedPassword.success && await bcrypt.compare(parsedPassword.data, user.password);
+  if (!passwordIsValid) {
+    return res.status(401).json({ message: 'Authentication failed' });
+  }
 
-  // const token = jwt.sign({ id: user.id, email }, secretKey, { expiresIn: '7d' });
-  // return res.json({ token });
+  const secretKey = process.env.JWT_SECRET_KEY || '';
+
+  const token = jwt.sign({ id: user.id, email: parsedEmail }, secretKey, { expiresIn: '7d' });
+  return res.json({ token });
 };
