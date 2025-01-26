@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-
+import { LoggedInAuth } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -21,11 +21,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />
+        element: (
+          <LoggedInAuth>
+            <Login />
+          </LoggedInAuth>
+        ),
       },
       {
         path: "/signup",
-        element: <Signup />
+        element: (
+          <LoggedInAuth>
+            <Signup />
+          </LoggedInAuth>
+        ),
       }
     ],
   },
