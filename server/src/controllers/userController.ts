@@ -1,18 +1,16 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 import {
   userIdSchema,
   userEmailSchema,
   userPasswordSchema,
 } from "../schema/userSchema";
-
-// User can update email with wrong/any password.
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 const saltRounds = 10;
 
-export const getUsers = async (_req: Request, res: Response) => {
+export const getUsers = async (_req: Request, res: any) => {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -38,14 +36,14 @@ export const getUsers = async (_req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (req: Request, res: any) => {
   const { id } = req.params;
 
   try {
     const parsedId = userIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const user = await prisma.user.findUnique({
@@ -71,7 +69,7 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserByEmail = async (req: Request, res: Response) => {
+export const getUserByEmail = async (req: Request, res: any) => {
   const { email } = req.params;
 
   try {

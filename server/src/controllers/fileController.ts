@@ -1,24 +1,14 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { fileIdSchema, fileUserIdSchema } from "../schema/fileSchema";
 import AWS from "../config/awsConfig";
 import dotenv from "dotenv";
-import { z } from "zod";
 
 dotenv.config();
-
-// Use res.sendStatus for all error responses.
-// Return a message and object for all successful responses.
-
-// If zod detects a message and object (successful), it will pass.
-// Else (error), it will be safe parsed so the error can be handled gracefully.
 
 const prisma = new PrismaClient();
 const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
-
-// The length of MongoDB strings are 24 characters.
-const idSchema = z.string().length(24);
-const userIdSchema = z.string().length(24);
 
 export const getAllFiles = async (_req: Request, res: any) => {
   try {
@@ -53,7 +43,7 @@ export const getUserFiles = async (req: Request, res: any) => {
   const { userId } = req.params;
 
   try {
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
       return res.sendStatus(400);
@@ -92,7 +82,7 @@ export const getFileById = async (req: Request, res: any) => {
   const { id } = req.params;
 
   try {
-    const parsedId = idSchema.safeParse(id);
+    const parsedId = fileIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
       return res.sendStatus(400);
@@ -128,7 +118,7 @@ export const uploadFile = async (req: Request, res: any) => {
   const { userId } = req.body;
 
   try {
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
       return res.sendStatus(400);
@@ -189,8 +179,8 @@ export const removeFile = async (req: Request, res: any) => {
   const { userId } = req.body;
 
   try {
-    const parsedId = idSchema.safeParse(id);
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedId = fileIdSchema.safeParse(id);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedId.success) {
       console.error(parsedId.error);
       return res.sendStatus(400);
