@@ -4,6 +4,7 @@ import { userEmailSchema, userPasswordSchema } from "../schema/userSchema";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { stringify } from "querystring";
 
 dotenv.config();
 const prisma = new PrismaClient();
@@ -65,8 +66,10 @@ export const signUp = async (req: Request, res: any) => {
         .json({ message: "Invalid password.", parsedPassword });
     }
 
+    const hashedPassword = await bcrypt.hash(parsedPassword.data, 10);
+
     const newUser = await prisma.user.create({
-      data: {email: parsedEmail.data, password: parsedPassword.data},
+      data: {email: parsedEmail.data, password: hashedPassword},
       select: {
         id: true,
         email: true,
@@ -100,17 +103,24 @@ export const login = async (req: Request, res: any) => {
   const user = await prisma.user.findUnique({
     where: { email: parsedEmail.data },
   });
+
   if (!user) {
     return res.status(401).json({ message: 'Authentication failed' });
   }
 
-  const passwordIsValid = parsedPassword.success && await bcrypt.compare(parsedPassword.data, user.password);
+  if (!parsedPassword.success) {
+    return res.status(400).json({ message: 'Invalid password.' });
+    
+  }
+
+  const passwordIsValid = await bcrypt.compare(parsedPassword.data, user.password);
+
   if (!passwordIsValid) {
     return res.status(401).json({ message: 'Authentication failed' });
   }
 
   const secretKey = process.env.JWT_SECRET_KEY || '';
 
-  const token = jwt.sign({ id: user.id, email: parsedEmail }, secretKey, { expiresIn: '7d' });
+  const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '7d' });
   return res.json({ token });
 };
