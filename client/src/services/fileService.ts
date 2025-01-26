@@ -1,4 +1,5 @@
 import axios from "axios";
+import { singleFileSchema, multiFileSchema } from "../schema/fileSchema";
 
 export const getAllFiles = async () => {
   try {

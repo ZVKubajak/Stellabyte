@@ -20,7 +20,7 @@ const bucket = process.env.BUCKET_NAME!;
 const idSchema = z.string().length(24);
 const userIdSchema = z.string().length(24);
 
-export const getAllFiles = async (_req: Request, res: Response) => {
+export const getAllFiles = async (_req: Request, res: any) => {
   try {
     const files = await prisma.file.findMany({
       select: {
@@ -36,7 +36,8 @@ export const getAllFiles = async (_req: Request, res: Response) => {
     });
 
     if (files.length === 0) {
-      res.status(404).json({ message: "No files found." });
+      console.error("No files found.");
+      return res.sendStatus(404);
     } else {
       res
         .status(200)
@@ -55,9 +56,7 @@ export const getUserFiles = async (req: Request, res: any) => {
     const parsedUserId = userIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      return res.sendStatus(400);
     }
 
     const files = await prisma.file.findMany({
@@ -75,7 +74,8 @@ export const getUserFiles = async (req: Request, res: any) => {
     });
 
     if (files.length === 0) {
-      res.status(404).json({ message: "No files found for this user." });
+      console.error("No files found for this user.");
+      return res.sendStatus(404);
     } else {
       res.status(200).json({
         message: `${files.length} file(s) found for this user.`,
@@ -95,7 +95,7 @@ export const getFileById = async (req: Request, res: any) => {
     const parsedId = idSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+      return res.sendStatus(400);
     }
 
     const file = await prisma.file.findUnique({
@@ -113,7 +113,8 @@ export const getFileById = async (req: Request, res: any) => {
     });
 
     if (!file) {
-      res.status(404).json({ message: "File not found." });
+      console.error("File not found.");
+      return res.sendStatus(404);
     } else {
       res.status(200).json({ message: "File found.", file });
     }
@@ -130,13 +131,12 @@ export const uploadFile = async (req: Request, res: any) => {
     const parsedUserId = userIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      return res.sendStatus(400);
     }
 
     if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded." });
+      console.error("No file uploaded.");
+      return res.sendStatus(400);
     }
 
     const user = await prisma.user.findUnique({
@@ -144,9 +144,8 @@ export const uploadFile = async (req: Request, res: any) => {
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User by given userId not found." });
+      console.error("User by given userId not found.");
+      return res.sendStatus(404);
     }
 
     const bucketParams = {
@@ -194,12 +193,10 @@ export const removeFile = async (req: Request, res: any) => {
     const parsedUserId = userIdSchema.safeParse(userId);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+      return res.sendStatus(400);
     } else if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      return res.status(400);
     }
 
     const file = await prisma.file.findUnique({
@@ -217,7 +214,8 @@ export const removeFile = async (req: Request, res: any) => {
     });
 
     if (!file) {
-      return res.status(404).json({ message: "File not found." });
+      console.error("File not found.");
+      return res.sendStatus(404);
     }
 
     const bucketParams = {
