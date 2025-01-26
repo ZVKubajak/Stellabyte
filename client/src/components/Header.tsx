@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Cross as HamburgerCross } from "hamburger-react";
+import authService from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <div className="m-3 z-999">
       <header
@@ -17,11 +19,18 @@ const Header = () => {
             Stellabyte
           </h1>
           <div className="relative z-10">
-            <HamburgerCross
-              toggled={isOpen}
-              toggle={setIsOpen}
-              color="whitesmoke"
-            />
+            {authService.loggedIn() ? (
+              <HamburgerCross
+                toggled={isOpen}
+                toggle={setIsOpen}
+                color="whitesmoke"
+              />
+            ) : (
+              <div className="mt-2">
+              <button className="text-[whitesmoke] m-0 mb-1 py-1 px-2 border border-[whitesmoke] rounded" onClick={() => navigate('/signup')}>Sign Up</button>
+              </div>
+
+            )}
           </div>
         </div>
 
