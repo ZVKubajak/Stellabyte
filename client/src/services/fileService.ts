@@ -1,11 +1,24 @@
 import axios from "axios";
-import { singleFileSchema, multiFileSchema } from "../schema/fileSchema";
+import {
+  singleFileSchema,
+  multiFileSchema,
+  deleteFileSchema,
+} from "../schema/fileSchema";
 
 export const getAllFiles = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/api/files`);
 
-    return response.data;
+    console.log(response);
+    const parsedData = multiFileSchema.safeParse(response.data);
+    console.log(parsedData);
+
+    if (!parsedData.success) {
+      console.error("Parsing Error:", parsedData.error);
+      return;
+    }
+
+    return parsedData.data;
   } catch (error) {
     console.error("Error fetching all files:", error);
     throw error;
@@ -18,7 +31,16 @@ export const getUserFiles = async (userId: string) => {
       `http://localhost:3001/api/files/user/${userId}`
     );
 
-    return response.data;
+    console.log(response);
+    const parsedData = multiFileSchema.safeParse(response.data);
+    console.log(parsedData);
+
+    if (!parsedData.success) {
+      console.error("Parsing Error:", parsedData.error);
+      return;
+    }
+
+    return parsedData.data;
   } catch (error) {
     console.error("Error fetching files by userId:", error);
     throw error;
@@ -31,7 +53,16 @@ export const getFileById = async (id: string) => {
       `http://localhost:3001/api/files/id/${id}`
     );
 
-    return response.data;
+    console.log(response);
+    const parsedData = singleFileSchema.safeParse(response.data);
+    console.log(parsedData);
+
+    if (!parsedData.success) {
+      console.error("Parsing Error:", parsedData.error);
+      return;
+    }
+
+    return parsedData.data;
   } catch (error) {
     console.error("Error fetching file by id:", error);
     throw error;
@@ -50,7 +81,16 @@ export const uploadFile = async (file: File, userId: string) => {
       },
     });
 
-    return response.data;
+    console.log(response);
+    const parsedData = singleFileSchema.safeParse(response.data);
+    console.log(parsedData);
+
+    if (!parsedData.success) {
+      console.error("Parsing Error:", parsedData.error);
+      return;
+    }
+
+    return parsedData.data;
   } catch (error) {
     console.error("Error uploading file:", error);
     throw error;
@@ -66,7 +106,16 @@ export const removeFile = async (id: string, userId: string) => {
       }
     );
 
-    return response.data;
+    console.log(response);
+    const parsedData = deleteFileSchema.safeParse(response.data);
+    console.log(parsedData);
+
+    if (!parsedData.success) {
+      console.error("Parsing Error:", parsedData.error);
+      return;
+    }
+
+    return parsedData.data;
   } catch (error) {
     console.error("Error removing file:", error);
     throw error;

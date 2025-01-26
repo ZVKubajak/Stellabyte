@@ -29,3 +29,7 @@ export const multiFileSchema = z.object({
     })
   ),
 });
+
+export const deleteFileSchema = z.object({
+  message: z.string(),
+});

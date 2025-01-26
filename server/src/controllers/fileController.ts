@@ -196,7 +196,7 @@ export const removeFile = async (req: Request, res: any) => {
       return res.sendStatus(400);
     } else if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const file = await prisma.file.findUnique({
