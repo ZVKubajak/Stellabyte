@@ -46,11 +46,13 @@ const Home = () => {
       </div>
 
       {/* third section */}
-      <div className="flex flex-col">
+      <div className="flex flex-col items-center mb-[100px]">
         <h1 className="text-center text-[whitesmoke] text-[24px] mt-[80px] mb-[30px]">
           Join now
         </h1>
-        <button className="bg-">Join and Upload</button>
+        <button className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer">
+          Join and Upload
+        </button>
       </div>
     </div>
   );
