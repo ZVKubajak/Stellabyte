@@ -42,7 +42,7 @@ export const getUserById = async (req: Request, res: Response) => {
     const parsedId = userIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -78,7 +78,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -115,13 +115,13 @@ export const createUser = async (req: Request, res: Response) => {
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
     if (!parsedPassword.success) {
       console.error(parsedPassword.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -167,13 +167,13 @@ export const updateUser = async (req: Request, res: Response) => {
 
     if (!parsedId.success) {
       console.error(parsedId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -234,7 +234,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     if (!parsedId.success) {
       console.error(parsedId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 

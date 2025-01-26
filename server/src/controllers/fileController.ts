@@ -45,7 +45,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
     const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -83,7 +83,7 @@ export const getFileById = async (req: Request, res: Response) => {
     const parsedId = fileIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -121,7 +121,7 @@ export const uploadFile = async (req: Request, res: Response) => {
     const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
@@ -187,11 +187,11 @@ export const removeFile = async (req: Request, res: Response) => {
 
     if (!parsedId.success) {
       console.error(parsedId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     } else if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      res.status(400).json({ message: "Parsing Error" });
+      res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
 
