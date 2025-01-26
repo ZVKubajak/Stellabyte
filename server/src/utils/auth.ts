@@ -68,8 +68,8 @@ export const signUp = async (req: Request, res: any) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: parsedEmail.data.email,
-        password: parsedPassword.data.password,
+        email: parsedEmail.data,
+        password: parsedPassword.data,
       }),
     });
 
@@ -111,7 +111,7 @@ export const login = async (req: Request, res: any) => {
     }
 
     const response = await fetch(
-      `http://localhost:3001/api/users/email/${parsedEmail.data.email}`
+      `http://localhost:3001/api/users/email/${parsedEmail.data}`
     );
 
     if (!response.ok) {

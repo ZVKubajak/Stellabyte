@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { fileIdSchema, fileUserIdSchema } from "../schema/fileSchema";
 import AWS from "../config/awsConfig";
 import dotenv from "dotenv";
-import { z } from "zod";
 
 dotenv.config();
 
@@ -10,121 +10,125 @@ const prisma = new PrismaClient();
 const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
 
-// The length of MongoDB strings are 24 characters.
-const idSchema = z.string().length(24);
-const userIdSchema = z.string().length(24);
-
 export const getAllFiles = async (_req: Request, res: Response) => {
   try {
     const files = await prisma.file.findMany({
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
-        s3Url: false,
+        s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
     if (files.length === 0) {
+      console.error("No files found.");
       res.status(404).json({ message: "No files found." });
-    } else {
-      res
-        .status(200)
-        .json({ message: `${files.length} file(s) found.`, files });
+      return;
     }
+
+    res.status(200).json(files);
   } catch (error) {
     console.error("Error fetching all files:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const getUserFiles = async (req: Request, res: any) => {
+export const getUserFiles = async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   try {
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
     }
 
     const files = await prisma.file.findMany({
       where: { userId: parsedUserId.data },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
     if (files.length === 0) {
+      console.error("No files found for this user.");
       res.status(404).json({ message: "No files found for this user." });
-    } else {
-      res.status(200).json({
-        message: `${files.length} file(s) found for this user.`,
-        files,
-      });
+      return;
     }
+
+    res.status(200).json(files);
   } catch (error) {
     console.error("Error fetching files by user:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const getFileById = async (req: Request, res: any) => {
+export const getFileById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const parsedId = idSchema.safeParse(id);
+    const parsedId = fileIdSchema.safeParse(id);
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
     }
 
     const file = await prisma.file.findUnique({
       where: { id: parsedId.data },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
     if (!file) {
+      console.error("File not found.");
       res.status(404).json({ message: "File not found." });
-    } else {
-      res.status(200).json({ message: "File found.", file });
+      return;
     }
+
+    res.status(200).json(file);
   } catch (error) {
     console.error("Error fetching file by ID:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const uploadFile = async (req: Request, res: any) => {
+export const uploadFile = async (req: Request, res: Response) => {
   const { userId } = req.body;
 
   try {
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
     if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
     }
 
     if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded." });
+      console.error("No file uploaded.");
+      res.status(400).json({ message: "No file uploaded." });
+      return;
     }
 
     const user = await prisma.user.findUnique({
@@ -132,9 +136,9 @@ export const uploadFile = async (req: Request, res: any) => {
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User by given userId not found." });
+      console.error("User by given userId not found.");
+      res.status(404).json({ message: "User by given userId not found." });
+      return;
     }
 
     const bucketParams = {
@@ -156,52 +160,59 @@ export const uploadFile = async (req: Request, res: any) => {
       },
       select: {
         id: true,
-        userId: false,
+        userId: true,
         fileName: true,
         fileType: true,
         fileSize: true,
         s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
-    res.status(201).json({ message: "File uploaded successfully.", newFile });
+    res.status(201).json(newFile);
   } catch (error) {
     console.error("Error uploading file:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const removeFile = async (req: Request, res: any) => {
+export const removeFile = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { userId } = req.body;
 
   try {
-    const parsedId = idSchema.safeParse(id);
-    const parsedUserId = userIdSchema.safeParse(userId);
+    const parsedId = fileIdSchema.safeParse(id);
+    const parsedUserId = fileUserIdSchema.safeParse(userId);
+
     if (!parsedId.success) {
       console.error(parsedId.error);
-      return res.status(400).json({ message: "Invalid id Syntax:", parsedId });
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
     } else if (!parsedUserId.success) {
       console.error(parsedUserId.error);
-      return res
-        .status(400)
-        .json({ message: "Invalid userId Syntax:", parsedUserId });
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
     }
 
     const file = await prisma.file.findUnique({
       where: { id: parsedId.data },
       select: {
-        id: false,
-        userId: false,
+        id: true,
+        userId: true,
         fileName: true,
-        fileType: false,
-        fileSize: false,
-        s3Url: false,
+        fileType: true,
+        fileSize: true,
+        s3Url: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
     if (!file) {
-      return res.status(404).json({ message: "File not found." });
+      console.error("File not found.");
+      res.status(404).json({ message: "File not found." });
+      return;
     }
 
     const bucketParams = {
@@ -217,6 +228,6 @@ export const removeFile = async (req: Request, res: any) => {
     res.status(200).json({ message: "File removed successfully." });
   } catch (error) {
     console.error("Error deleting file:", error);
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error" });
   }
 };
