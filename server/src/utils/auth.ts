@@ -1,9 +1,13 @@
 import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcrypt";
 import { userEmailSchema, userPasswordSchema } from "../schema/userSchema";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
+import { stringify } from "querystring";
 
 dotenv.config();
+const prisma = new PrismaClient();
 
 // New Approach: Interface For Request.
 
@@ -51,8 +55,8 @@ export const signUp = async (req: Request, res: any) => {
   const { email, password } = req.body;
 
   try {
-    const parsedEmail = userEmailSchema.safeParse({ email });
-    const parsedPassword = userPasswordSchema.safeParse({ password });
+    const parsedEmail = userEmailSchema.safeParse(email);
+    const parsedPassword = userPasswordSchema.safeParse(password);
 
     if (!parsedEmail.success) {
       return res.status(400).json({ message: "Invalid email.", parsedEmail });
@@ -62,27 +66,21 @@ export const signUp = async (req: Request, res: any) => {
         .json({ message: "Invalid password.", parsedPassword });
     }
 
-    const response = await fetch(`http://localhost:3001/api/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const hashedPassword = await bcrypt.hash(parsedPassword.data, 10);
+
+    const newUser = await prisma.user.create({
+      data: {email: parsedEmail.data, password: hashedPassword},
+      select: {
+        id: true,
+        email: true,
+        myFiles: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      body: JSON.stringify({
-        email: parsedEmail.data,
-        password: parsedPassword.data,
-      }),
-    });
-
-    if (!response.ok) {
-      return res
-        .status(400)
-        .json({ message: "Unable to create user.", response });
-    }
-
-    const data = await response.json();
+    })
 
     const token = jwt.sign(
-      { id: data.user.id, email: data.user.email },
+      { id: newUser.id, email: newUser.email },
       secretKey,
       { expiresIn: "7d" }
     );
@@ -98,37 +96,31 @@ export const signUp = async (req: Request, res: any) => {
 
 export const login = async (req: Request, res: any) => {
   const { email, password } = req.body;
-  try {
-    const parsedEmail = userEmailSchema.safeParse({ email });
-    const parsedPassword = userPasswordSchema.safeParse({ password });
 
-    if (!parsedEmail.success) {
-      return res.status(400).json({ message: "Invalid email.", parsedEmail });
-    } else if (!parsedPassword.success) {
-      return res
-        .status(400)
-        .json({ message: "Invalid password.", parsedPassword });
-    }
+  const parsedEmail = userEmailSchema.safeParse(email);
+  const parsedPassword = userPasswordSchema.safeParse(password);
 
-    const response = await fetch(
-      `http://localhost:3001/api/users/email/${parsedEmail.data}`
-    );
+  const user = await prisma.user.findUnique({
+    where: { email: parsedEmail.data },
+  });
 
-    if (!response.ok) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    const data = await response.json();
-
-    const token = jwt.sign(
-      { id: data.user.id, email: data.user.email },
-      secretKey,
-      { expiresIn: "7d" }
-    );
-
-    return res.status(200).json({ message: "User logged in.", token });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ message: "Server Error", error });
+  if (!user) {
+    return res.status(401).json({ message: 'Authentication failed' });
   }
+
+  if (!parsedPassword.success) {
+    return res.status(400).json({ message: 'Invalid password.' });
+    
+  }
+
+  const passwordIsValid = await bcrypt.compare(parsedPassword.data, user.password);
+
+  if (!passwordIsValid) {
+    return res.status(401).json({ message: 'Authentication failed' });
+  }
+
+  const secretKey = process.env.JWT_SECRET_KEY || '';
+
+  const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '7d' });
+  return res.json({ token });
 };

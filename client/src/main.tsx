@@ -3,8 +3,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-
+import { LoggedInAuth } from "./components/AuthGuard";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import ErrorPage from "./pages/ErrorPage";
 
 const router = createBrowserRouter([
@@ -17,6 +19,22 @@ const router = createBrowserRouter([
         index: true,
         element: <Home />
       },
+      {
+        path: "/login",
+        element: (
+          <LoggedInAuth>
+            <Login />
+          </LoggedInAuth>
+        ),
+      },
+      {
+        path: "/signup",
+        element: (
+          <LoggedInAuth>
+            <Signup />
+          </LoggedInAuth>
+        ),
+      }
     ],
   },
 ]);

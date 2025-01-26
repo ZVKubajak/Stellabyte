@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Cross as HamburgerCross } from "hamburger-react";
+import authService from "../utils/auth";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const pathname = useLocation().pathname;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
   return (
     <div className="m-3 z-999">
       <header
@@ -17,11 +25,18 @@ const Header = () => {
             Stellabyte
           </h1>
           <div className="relative z-10">
-            <HamburgerCross
-              toggled={isOpen}
-              toggle={setIsOpen}
-              color="whitesmoke"
-            />
+            {authService.loggedIn() ? (
+              <HamburgerCross
+                toggled={isOpen}
+                toggle={setIsOpen}
+                color="whitesmoke"
+              />
+            ) : (
+              <div className="mt-2">
+              <button className="text-[whitesmoke] m-0 mb-1 py-1 px-2 border border-[whitesmoke] rounded" onClick={() => navigate('/signup')}>Sign Up</button>
+              </div>
+
+            )}
           </div>
         </div>
 
@@ -31,7 +46,9 @@ const Header = () => {
             isOpen ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* Add content here */}
+          <div onClick={() => authService.logout()}>
+            <h1>Log Out</h1>
+          </div>
         </div>
       </header>
     </div>
