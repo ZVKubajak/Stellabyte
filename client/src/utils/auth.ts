@@ -25,7 +25,7 @@ class AuthService {
     const token = this.getToken();
     if (token && !this.isTokenExpired(token)) {
       try {
-        const decoded = jwtDecode<{ id: string; email: string, username: string }>(token);
+        const decoded = jwtDecode<{ id: string; email: string }>(token);
         return decoded;
       } catch (error) {
         console.error("Failed to decode token:", error);
