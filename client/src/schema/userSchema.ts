@@ -9,11 +9,5 @@ export const userSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-export const userResSchema = z.object({
-  message: z.string(),
-  user: userSchema,
-});
-
-export const deleteUserSchema = z.object({
-  message: z.string(),
-});
+export const deleteUserSchema = z.string();
+export const userResErrorSchema = z.string();

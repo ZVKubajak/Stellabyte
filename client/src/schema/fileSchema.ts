@@ -12,11 +12,6 @@ export const singleFileSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-export const singleFileResSchema = z.object({
-  message: z.string(),
-  file: singleFileSchema,
-});
-
 // Used in userSchema.
 export const multiFileSchema = z.array(
   z.object({
@@ -31,11 +26,5 @@ export const multiFileSchema = z.array(
   })
 );
 
-export const multiFileResSchema = z.object({
-  message: z.string(),
-  file: multiFileSchema,
-});
-
-export const deleteFileSchema = z.object({
-  message: z.string(),
-});
+export const deleteFileSchema = z.string();
+export const fileResErrorSchema = z.string();
