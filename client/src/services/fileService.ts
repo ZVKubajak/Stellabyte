@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
-  singleFileSchema,
-  multiFileSchema,
+  fileSchema,
+  fileArraySchema,
   deleteFileSchema,
 } from "../schema/fileSchema";
 
@@ -10,11 +10,11 @@ export const getAllFiles = async () => {
     const response = await axios.get(`http://localhost:3001/api/files`);
 
     console.log(response);
-    const parsedData = multiFileSchema.safeParse(response.data);
+    const parsedData = fileArraySchema.safeParse(response.data);
     console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Parsing Error:", parsedData.error);
+      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -32,11 +32,11 @@ export const getUserFiles = async (userId: string) => {
     );
 
     console.log(response);
-    const parsedData = multiFileSchema.safeParse(response.data);
+    const parsedData = fileArraySchema.safeParse(response.data);
     console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Parsing Error:", parsedData.error);
+      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -54,11 +54,11 @@ export const getFileById = async (id: string) => {
     );
 
     console.log(response);
-    const parsedData = singleFileSchema.safeParse(response.data);
+    const parsedData = fileSchema.safeParse(response.data);
     console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Parsing Error:", parsedData.error);
+      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -82,11 +82,11 @@ export const uploadFile = async (file: File, userId: string) => {
     });
 
     console.log(response);
-    const parsedData = singleFileSchema.safeParse(response.data);
+    const parsedData = fileSchema.safeParse(response.data);
     console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Parsing Error:", parsedData.error);
+      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -111,7 +111,7 @@ export const removeFile = async (id: string, userId: string) => {
     console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Parsing Error:", parsedData.error);
+      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
