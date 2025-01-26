@@ -5,6 +5,7 @@ import { UserLogin } from "../interfaces/userLogin";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
+
   const [signUpData, setSignUpData] = useState<UserLogin>({
     email: "",
     password: "",
@@ -78,6 +79,8 @@ const Signup = () => {
       }
     }
   };
+
+  
 
   return (
     <div className="h-screen flex items-center justify-center py-16 px-6 sm:px-8 lg:px-12">

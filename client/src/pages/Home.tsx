@@ -1,8 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import Section from "../components/Section";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col">
       {/* first section */}
@@ -11,7 +14,7 @@ const Home = () => {
           <h1 className="text-[whitesmoke] mb-3">
             Upload. Create. Illuminate Your Cloud Galaxy.
           </h1>
-          <button className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer">
+          <button className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer" onClick={() => navigate("/signup")}>
             Get started
           </button>
         </div>
@@ -50,7 +53,7 @@ const Home = () => {
         <h1 className="text-center text-[whitesmoke] text-[24px] mt-[80px] mb-[30px]">
           Join now
         </h1>
-        <button className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer">
+        <button className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer" onClick={() => navigate("/signup")}>
           Join and Upload
         </button>
       </div>
