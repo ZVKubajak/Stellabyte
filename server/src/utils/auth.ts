@@ -58,14 +58,6 @@ export const signUp = async (req: Request, res: Response) => {
     const parsedEmail = userEmailSchema.safeParse(email);
     const parsedPassword = userPasswordSchema.safeParse(password);
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: parsedEmail.data }
-    })
-
-    if (existingUser) {
-      return res.status(400).json({ message: "Error occurred. Please try again later." })
-    }
-
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
       res.status(400).json({ message: "Controller Parsing Error" });
