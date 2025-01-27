@@ -1,11 +1,36 @@
 import { useState, FormEvent, ChangeEvent } from "react";
+import { Link } from "react-router-dom";
 import Auth from "../utils/auth";
 import { signUp } from "../api/authAPI";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { UserLogin } from "../interfaces/userLogin";
-import { Link } from "react-router-dom";
+
+const signUpSchema = z
+  .object({
+    email: z.string().email("Invalid email."),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters.")
+      .max(20, "Password can not be more than 20 characters.")
+      .regex(/[a-z]/, "Password must include at least 1 lowercase letter.")
+      .regex(/[A-Z]/, "Password must include at least 1 uppercase letter.")
+      .regex(/\d/, "Password must include at least 1 number.")
+      .regex(
+        /[@$!%*?&]/,
+        "Password must include at least 1 special character."
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+type TSignUpSchema = z.infer<typeof signUpSchema>;
 
 const Signup = () => {
-
   const [signUpData, setSignUpData] = useState<UserLogin>({
     email: "",
     password: "",
@@ -17,6 +42,19 @@ const Signup = () => {
   });
 
   const [generalError, setGeneralError] = useState<string>("");
+
+  function Form() {
+    const {
+      register,
+      handleSubmit,
+      formState: { errors, isSubmitting },
+      reset,
+    } = useForm<TSignUpSchema>({
+      resolver: zodResolver(signUpSchema),
+    });
+  }
+
+  const onSubmit = async (data: TSignUpSchema) => {};
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -62,7 +100,7 @@ const Signup = () => {
     if (validateForm()) {
       try {
         const data = await signUp(signUpData);
-        console.log(data)
+        console.log(data);
         Auth.login(data.token, true);
       } catch (err: any) {
         console.error("Failed to sign up", err);
@@ -80,8 +118,6 @@ const Signup = () => {
     }
   };
 
-  
-
   return (
     <div className="h-screen flex items-center justify-center py-16 px-6 sm:px-8 lg:px-12">
       <div className="max-w-lg w-full space-y-12">
@@ -96,11 +132,7 @@ const Signup = () => {
             </Link>
           </p>
         </div>
-        <form
-          className="space-y-8"
-          method="POST"
-          onSubmit={handleSubmit}
-        >
+        <form className="space-y-8" method="POST" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm space-y-6">
             <div>
