@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Auth from "../utils/auth";
 import { signUp } from "../api/authAPI";
 import { signUpSchema } from "../schema/authSchema";
+import authService from "../utils/auth";
 
 type TSignUpSchema = z.infer<typeof signUpSchema>;
 
@@ -23,9 +24,9 @@ const Signup = () => {
 
   const onSubmit = async (data: TSignUpSchema) => {
     try {
-      console.log("Form Data:", data);
-      setGeneralError("");
+      const token = await signUp(data);
 
+      setGeneralError("");
       reset();
     } catch (error) {
       console.error("Signup failed:", error);

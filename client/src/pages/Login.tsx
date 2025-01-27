@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Auth from "../utils/auth";
 import { login } from "../api/authAPI";
 import { loginSchema } from "../schema/authSchema";
+import authService from "../utils/auth";
 
 type TLoginSchema = z.infer<typeof loginSchema>;
 
@@ -23,9 +24,9 @@ const Login = () => {
 
   const onSubmit = async (data: TLoginSchema) => {
     try {
-      console.log("Form Data:", data);
-      setGeneralError("");
+      const token = await login(data);
 
+      setGeneralError("");
       reset();
     } catch (error) {
       console.error("Login failed:", error);
