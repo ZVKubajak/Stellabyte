@@ -58,6 +58,14 @@ export const signUp = async (req: Request, res: any) => {
     const parsedEmail = userEmailSchema.safeParse(email);
     const parsedPassword = userPasswordSchema.safeParse(password);
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email: parsedEmail.data }
+    })
+
+    if (existingUser) {
+      return res.status(400).json({ message: "Error occurred. Please try again later." })
+    }
+
     if (!parsedEmail.success) {
       return res.status(400).json({ message: "Invalid email.", parsedEmail });
     } else if (!parsedPassword.success) {
