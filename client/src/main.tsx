@@ -3,10 +3,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import { LoggedInAuth } from "./components/AuthGuard";
+import { 
+  // AuthGuard, 
+  LoggedInAuth } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Support from "./pages/Support";
 import ErrorPage from "./pages/ErrorPage";
 
 const router = createBrowserRouter([
@@ -34,7 +37,11 @@ const router = createBrowserRouter([
             <Signup />
           </LoggedInAuth>
         ),
-      }
+      },
+      {
+        path: "/support",
+        element: <Support />,
+      },
     ],
   },
 ]);
