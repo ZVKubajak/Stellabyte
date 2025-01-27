@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import Section from "../components/Section";
 import { useNavigate } from "react-router-dom";
-import authService from "../utils/auth";
+import auth from "../utils/auth";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Home = () => {
           <h1 className="text-[whitesmoke] mb-3">
             Upload. Create. Illuminate Your Cloud Galaxy.
           </h1>
-          {authService.loggedIn() ? (
+          {auth.loggedIn() ? (
             <button
               className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer"
               onClick={() => navigate("/cloud-storage")}
@@ -62,7 +62,7 @@ const Home = () => {
 
       {/* third section */}
 
-      {!authService.loggedIn() ? (
+      {!auth.loggedIn() ? (
         <div className="flex flex-col items-center mb-[100px]">
           <h1 className="text-center text-[whitesmoke] text-[24px] mt-[80px] mb-[30px]">
             Join now
