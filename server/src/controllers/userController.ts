@@ -196,11 +196,12 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: parsedEmail.data },
     });
 
-    if (existingUser?.email === parsedEmail.data) {
-      res.status(403).json({ message: "Provided email is already in use." });
+    if (existingUser) {
+      console.error("User with this email already exists.");
+      res.status(403).json({ message: "Forbidden" });
       return;
     }
 
