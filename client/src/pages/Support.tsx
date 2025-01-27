@@ -3,7 +3,6 @@ import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 
 const Support = () => {
-  const [result, setResult] = useState("");
   const [hasEmail, setHasEmail] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -24,7 +23,6 @@ const Support = () => {
 
     const form = event.currentTarget;
 
-    setResult("Sending....");
     const formData = new FormData(form);
 
     if (hasEmail && userEmail) {
@@ -42,7 +40,6 @@ const Support = () => {
       const data = await response.json();
 
       if (data.success) {
-        setResult("Form Submitted Successfully");
         form.reset();
         Swal.fire({
           title: "Success!",
@@ -51,7 +48,6 @@ const Support = () => {
         });
       } else {
         console.error("Error", data);
-        setResult(data.message);
         Swal.fire({
           title: "Error!",
           text: data.message,
@@ -60,7 +56,6 @@ const Support = () => {
       }
     } catch (error) {
       console.error("Error submitting the form:", error);
-      setResult("An error occurred. Please try again.");
       Swal.fire({
         title: "Error!",
         text: "An error occurred. Please try again.",
