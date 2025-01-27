@@ -1,11 +1,8 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import Auth from "../utils/auth";
-import { signUp } from "../api/authAPI";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { UserLogin } from "../interfaces/userLogin";
 
 const signUpSchema = z
   .object({
@@ -31,90 +28,26 @@ const signUpSchema = z
 type TSignUpSchema = z.infer<typeof signUpSchema>;
 
 const Signup = () => {
-  const [signUpData, setSignUpData] = useState<UserLogin>({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
-
   const [generalError, setGeneralError] = useState<string>("");
 
-  function Form() {
-    const {
-      register,
-      handleSubmit,
-      formState: { errors, isSubmitting },
-      reset,
-    } = useForm<TSignUpSchema>({
-      resolver: zodResolver(signUpSchema),
-    });
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TSignUpSchema>({
+    resolver: zodResolver(signUpSchema),
+  });
 
-  const onSubmit = async (data: TSignUpSchema) => {};
+  const onSubmit = async (data: TSignUpSchema) => {
+    try {
+      console.log("Form Data:", data);
+      setGeneralError("");
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setSignUpData({
-      ...signUpData,
-      [name]: value,
-    });
-
-    setErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
-    setGeneralError("");
-  };
-
-  const validateForm = () => {
-    const newErrors = {
-      email: "",
-      password: "",
-    };
-
-    if (!signUpData.email) {
-      newErrors.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signUpData.email)) {
-      newErrors.email = "Enter a valid email address.";
-    }
-
-    if (!signUpData.password) {
-      newErrors.password = "Password is required.";
-    } else if (signUpData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters.";
-    }
-
-    setErrors(newErrors);
-
-    return !Object.values(newErrors).some((error) => error !== "");
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      try {
-        const data = await signUp(signUpData);
-        console.log(data);
-        Auth.login(data.token, true);
-      } catch (err: any) {
-        console.error("Failed to sign up", err);
-
-        if (err.response?.data?.message) {
-          if (err.response.data.message.includes("email")) {
-            setGeneralError("Error occurred. Please try again later.");
-          } else {
-            setGeneralError(err.response.data.message);
-          }
-        } else {
-          setGeneralError("Error occurred. Please try again later.");
-        }
-      }
+      reset();
+    } catch (error) {
+      console.error("Signup failed:", error);
+      setGeneralError("An error occurred. Please try again.");
     }
   };
 
@@ -132,29 +65,29 @@ const Signup = () => {
             </Link>
           </p>
         </div>
-        <form className="space-y-8" method="POST" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" defaultValue="true" />
+        <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm space-y-6">
             <div>
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-[whitesmoke]"
               >
-                Email address
+                Email Address
               </label>
               <input
                 id="email"
-                name="email"
-                type="text"
+                type="email"
+                placeholder="my@email.com"
+                {...register("email")}
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-lg"
-                placeholder="Enter email"
-                value={signUpData.email || ""}
-                onChange={handleChange}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="password"
@@ -164,27 +97,50 @@ const Signup = () => {
               </label>
               <input
                 id="password"
-                name="password"
                 type="password"
+                placeholder="Password123!"
+                {...register("password")}
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-lg"
-                placeholder="Enter password"
-                value={signUpData.password || ""}
-                onChange={handleChange}
               />
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-[whitesmoke]"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                {...register("confirmPassword")}
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-lg"
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
           </div>
+
           {generalError && (
             <p className="text-red-500 text-sm mt-1">{generalError}</p>
           )}
+
           <div>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="group relative w-full flex justify-center py-3 px-6 border-transparent text-lg font-medium rounded text-white bg-[#13547a] hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
-              Sign up
+              {isSubmitting ? "Signing up..." : "Sign up"}
             </button>
           </div>
         </form>
