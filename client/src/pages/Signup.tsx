@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import Auth from "../utils/auth"
+import { signUp } from "../api/authAPI";
 
 const signUpSchema = z
   .object({
