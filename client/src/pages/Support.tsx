@@ -6,9 +6,15 @@ import auth from "../utils/auth";
 import Swal from "sweetalert2";
 
 const supportSchema = z.object({
-  name: z.string().max(50, "Name can not be more than 50 letters."),
+  name: z
+    .string()
+    .min(1, "Name is required.")
+    .max(50, "Name can not be more than 50 characters."),
   email: z.string().email("Invalid email."),
-  message: z.string().max(1000, "Message can not be more than 1000 letters."),
+  message: z
+    .string()
+    .min(1, "Message is required.")
+    .max(1000, "Message can not be more than 1000 characters."),
 });
 
 type TSupportSchema = z.infer<typeof supportSchema>;
@@ -47,21 +53,22 @@ const Support = () => {
 
       if (parsedResponse.success) {
         Swal.fire({
-          title: "Success!",
-          text: "Form Submitted Successfully.",
+          title: "Message Sent!",
+          text: "We'll write back to you in the coming days.",
           icon: "success",
+        }).then(() => {
+          reset();
         });
       } else {
         console.error("Web3Form Error:", parsedResponse);
         Swal.fire({
-          title: "An error has occurred!",
-          text: "Please try again later.",
+          title: "Whoops!",
+          text: "An error has occurred. Please try again.",
           icon: "error",
         });
       }
 
       setGeneralError("");
-      reset();
     } catch (error) {
       console.error("onSubmit Error:", error);
       setGeneralError("An error has occurred. Please try again.");
@@ -94,9 +101,7 @@ const Support = () => {
               className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email?.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
           <div>
