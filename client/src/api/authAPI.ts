@@ -1,50 +1,36 @@
-import { UserLogin } from "../interfaces/userLogin";
+import axios from "axios";
+import { z } from "zod";
+import { signUpSchema, loginSchema } from "../schema/authSchema";
 
-const login = async (userInfo: UserLogin) => {
+type TSignUpSchema = z.infer<typeof signUpSchema>;
+type TLoginSchema = z.infer<typeof loginSchema>;
+
+const signUp = async (userInfo: TSignUpSchema) => {
   try {
-    const response = await fetch("http://localhost:3001/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userInfo),
+    const response = await axios.post(`http://localhost:3001/api/auth/signup`, {
+      email: userInfo.email,
+      password: userInfo.password,
     });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Error: ${errorData.message}`);
-    }
 
-    const data = await response.json();
-
-    return data;
-  } catch (err) {
-    console.log("Error from user login: ", err);
-    return Promise.reject("Could not fetch user info");
+    return response.data;
+  } catch (error) {
+    console.log("Error signing up user:", error);
+    throw error;
   }
 };
 
-const signUp = async (userInfo: UserLogin) => {
+const login = async (userInfo: TLoginSchema) => {
   try {
-    const response = await fetch("http://localhost:3001/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userInfo),
+    const response = await axios.post("http://localhost:3001/api/auth/login", {
+      email: userInfo.email,
+      password: userInfo.password,
     });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Error: ${errorData.message}`);
-    }
 
-    const data = await response.json();
-
-    return data;
-  } catch (err) {
-    console.log("Error from user login: ", err);
-    return Promise.reject("Could not fetch user info");
+    return response.data;
+  } catch (error) {
+    console.log("Error logging in user: ", error);
+    throw error;
   }
 };
 
-export { login, signUp };
+export { signUp, login };

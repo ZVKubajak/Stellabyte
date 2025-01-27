@@ -5,18 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Auth from "../utils/auth";
 import { login } from "../api/authAPI";
-
-const loginSchema = z.object({
-  email: z.string().email("Invalid email."),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters.")
-    .max(20, "Password can not be more than 20 characters.")
-    .regex(/[a-z]/, "Password must include at least 1 lowercase letter.")
-    .regex(/[A-Z]/, "Password must include at least 1 uppercase letter.")
-    .regex(/\d/, "Password must include at least 1 number.")
-    .regex(/[@$!%*?&]/, "Password must include at least 1 special character."),
-});
+import { loginSchema } from "../schema/authSchema";
 
 type TLoginSchema = z.infer<typeof loginSchema>;
 
