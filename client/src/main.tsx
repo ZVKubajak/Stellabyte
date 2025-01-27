@@ -3,7 +3,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import { AuthGuard, LoggedInAuth } from "./components/AuthGuard";
+import { 
+  // AuthGuard, 
+  LoggedInAuth } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -38,11 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/support",
-        element: (
-          <AuthGuard>
-            <Support />
-          </AuthGuard>
-        ),
+        element: <Support />,
       },
     ],
   },

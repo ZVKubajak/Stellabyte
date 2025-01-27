@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
 
 const Support = () => {
   const [result, setResult] = useState("");
@@ -22,34 +23,49 @@ const Support = () => {
     event.preventDefault();
 
     const form = event.currentTarget;
-  
+
     setResult("Sending....");
     const formData = new FormData(form);
 
     if (hasEmail && userEmail) {
       formData.set("email", userEmail);
     }
-  
+
     formData.append("access_key", "73a6d637-0dd7-4625-ba1a-3c217cac240a");
-  
+
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: formData,
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         setResult("Form Submitted Successfully");
         form.reset();
+        Swal.fire({
+          title: "Success!",
+          text: "Form Submitted Successfully.",
+          icon: "success",
+        });
       } else {
         console.error("Error", data);
         setResult(data.message);
+        Swal.fire({
+          title: "Error!",
+          text: data.message,
+          icon: "error",
+        });
       }
     } catch (error) {
       console.error("Error submitting the form:", error);
       setResult("An error occurred. Please try again.");
+      Swal.fire({
+        title: "Error!",
+        text: "An error occurred. Please try again.",
+        icon: "error",
+      });
     }
   };
 
