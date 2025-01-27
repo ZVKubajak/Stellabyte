@@ -6,12 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { login } from "../api/authAPI";
 import { loginSchema } from "../schema/authSchema";
-import authService from "../utils/auth";
+import auth from "../utils/auth";
 
 type TLoginSchema = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [generalError, setGeneralError] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -25,6 +27,14 @@ const Login = () => {
   const onSubmit = async (data: TLoginSchema) => {
     try {
       const token = await login(data);
+
+      if (!token) {
+        console.error("Token is undefined.");
+        throw Error;
+      }
+
+      auth.login(token);
+      navigate("/");
 
       setGeneralError("");
       reset();

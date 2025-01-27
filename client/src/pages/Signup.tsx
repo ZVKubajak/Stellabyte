@@ -6,12 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { signUp } from "../api/authAPI";
 import { signUpSchema } from "../schema/authSchema";
-import authService from "../utils/auth";
+import auth from "../utils/auth";
 
 type TSignUpSchema = z.infer<typeof signUpSchema>;
 
 const Signup = () => {
   const [generalError, setGeneralError] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -25,6 +27,14 @@ const Signup = () => {
   const onSubmit = async (data: TSignUpSchema) => {
     try {
       const token = await signUp(data);
+
+      if (!token) {
+        console.error("Token is undefined.");
+        throw Error;
+      }
+
+      auth.login(token);
+      navigate("/");
 
       setGeneralError("");
       reset();

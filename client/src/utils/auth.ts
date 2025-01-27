@@ -1,23 +1,30 @@
 import { jwtDecode } from "jwt-decode";
+import { z } from "zod";
+import { tokenSchema } from "../schema/authSchema";
+
+type TTokenSchema = z.infer<typeof tokenSchema>;
 
 class AuthService {
-  loggedIn() {
-    const token = this.getToken();
-    return token && !this.isTokenExpired(token);
+  login(idToken: TTokenSchema) {
+    localStorage.setItem("id_token", idToken);
   }
 
-  getToken(): string {
+  logout() {
+    localStorage.removeItem("id_token");
+  }
+
+  getToken(): TTokenSchema {
     return localStorage.getItem("id_token") || "";
   }
 
-  isTokenExpired(token: string): boolean {
+  isTokenExpired(token: TTokenSchema): boolean {
     try {
       const decoded: { exp: number } = jwtDecode(token);
-      const currentTime = Date.now() / 1000; // Current time in seconds
+      const currentTime = Date.now() / 1000;
       return decoded.exp < currentTime;
     } catch (error) {
       console.error("Failed to decode token:", error);
-      return true; // Treat as expired if decoding fails
+      return true;
     }
   }
 
@@ -35,17 +42,9 @@ class AuthService {
     return null;
   }
 
-  login(idToken: string, isSignup = false) {
-    localStorage.setItem("id_token", idToken);
-    if (isSignup) {
-      localStorage.setItem("isFirstSignup", "true");
-    }
-    window.location.assign("/");
-  }
-
-  logout() {
-    localStorage.removeItem("id_token");
-    window.location.assign("/");
+  loggedIn() {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token);
   }
 
   handleTokenExpiration() {
@@ -56,6 +55,6 @@ class AuthService {
   }
 }
 
-const authService = new AuthService();
+const auth = new AuthService();
 
-export default authService;
+export default auth;
