@@ -2,20 +2,9 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { supportSchema, responseSchema } from "../schema/supportSchema";
 import auth from "../utils/auth";
 import Swal from "sweetalert2";
-
-const supportSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required.")
-    .max(50, "Name can not be more than 50 characters."),
-  email: z.string().email("Invalid email."),
-  message: z
-    .string()
-    .min(1, "Message is required.")
-    .max(1000, "Message can not be more than 1000 characters."),
-});
 
 type TSupportSchema = z.infer<typeof supportSchema>;
 
@@ -49,9 +38,15 @@ const Support = () => {
         body: webForm,
       });
 
-      const parsedResponse = await response.json();
+      const result = await response.json();
+      const parsedResult = responseSchema.safeParse(result);
 
-      if (parsedResponse.success) {
+      if (!parsedResult.success) {
+        console.error("Frontend Parsing Error:", parsedResult.error);
+        throw Error;
+      }
+
+      if (parsedResult.data.success) {
         Swal.fire({
           title: "Message Sent!",
           text: "We'll write back to you in the coming days.",
@@ -60,7 +55,7 @@ const Support = () => {
           reset();
         });
       } else {
-        console.error("Web3Form Error:", parsedResponse);
+        console.error("Web3Form Error:", parsedResult.data);
         Swal.fire({
           title: "Whoops!",
           text: "An error has occurred. Please try again.",
