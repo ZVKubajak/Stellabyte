@@ -15,6 +15,7 @@ type TSupportSchema = z.infer<typeof supportSchema>;
 
 const Support = () => {
   const [hasEmail, setHasEmail] = useState(true);
+  const [generalError, setGeneralError] = useState<string>("");
 
   let userEmail = "";
   const profile = auth.getProfile();
@@ -45,7 +46,6 @@ const Support = () => {
       const parsedResponse = await response.json();
 
       if (parsedResponse.success) {
-        reset();
         Swal.fire({
           title: "Success!",
           text: "Form Submitted Successfully.",
@@ -59,13 +59,12 @@ const Support = () => {
           icon: "error",
         });
       }
+
+      setGeneralError("");
+      reset();
     } catch (error) {
       console.error("onSubmit Error:", error);
-      Swal.fire({
-        title: "An error has occurred!",
-        text: "Please try again later.",
-        icon: "error",
-      });
+      setGeneralError("An error has occurred. Please try again.");
     }
   };
 
@@ -80,7 +79,7 @@ const Support = () => {
           Need help? Fill out the form below, and our team will get back to you
           as soon as possible.
         </p>
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label
               htmlFor="name"
@@ -90,11 +89,15 @@ const Support = () => {
             </label>
             <input
               type="text"
-              name="name"
-              placeholder="Enter your name"
+              placeholder="Enter Name"
+              {...register("name")}
               className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
-              required
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email?.message}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -119,14 +122,18 @@ const Support = () => {
             ) : (
               <input
                 type="email"
-                name="email"
-                placeholder="Enter your email"
+                placeholder="Enter Email"
+                {...register("email")}
                 className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
-                required
                 onBlur={(e) => {
                   if (e.target.value === userEmail) setHasEmail(true);
                 }}
               />
+            )}
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
           <div>
@@ -137,17 +144,27 @@ const Support = () => {
               Message
             </label>
             <textarea
-              name="message"
               placeholder="Tell us about your issue..."
+              {...register("message")}
               className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300 min-h-[100px] max-h-[100px] h-[100px]"
-              required
             ></textarea>
+            {errors.message && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.message.message}
+              </p>
+            )}
           </div>
+
+          {generalError && (
+            <p className="text-red-500 text-sm mt-1">{generalError}</p>
+          )}
+
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full bg-[#13547a] text-white py-3 rounded hover:bg-blue-700"
           >
-            Submit
+            {isSubmitting ? "Sending..." : "Submit"}
           </button>
         </form>
       </div>
