@@ -5,7 +5,7 @@ export const supportSchema = z.object({
     .string()
     .min(1, "Name is required.")
     .max(50, "Name can not be more than 50 characters."),
-  email: z.string().email("Invalid email."),
+  email: z.string().email("Invalid email.").optional(),
   message: z
     .string()
     .min(1, "Message is required.")

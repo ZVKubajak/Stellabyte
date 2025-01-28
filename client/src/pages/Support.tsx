@@ -27,9 +27,12 @@ const Support = () => {
 
   const onSubmit = async (data: TSupportSchema) => {
     try {
+      let formEmail = userEmail;
+      if (data.email) formEmail = data.email;
+
       const webForm = new FormData();
       webForm.append("name", data.name);
-      webForm.append("email", data.email);
+      webForm.append("email", formEmail);
       webForm.append("message", data.message);
       webForm.append("access_key", "73a6d637-0dd7-4625-ba1a-3c217cac240a");
 
