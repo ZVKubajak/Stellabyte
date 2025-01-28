@@ -174,65 +174,78 @@ const Settings = () => {
             Update Email
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body
-          style={{
-            backgroundColor: "#13547a",
-            color: "whitesmoke",
-            textAlign: "center",
-          }}
-        >
-          {/* Current Email */}
-          <p className="mb-4">Current Email: {userEmail}</p>
-
-          {/* New Email Input */}
-          <input
-            type="email"
-            placeholder="New Email"
-            {...register("newEmail")}
-            className="w-full p-2 rounded text-black mb-4"
-          />
-
-          {/* Confirm New Email Input */}
-          <input
-            type="email"
-            placeholder="Confirm Email"
-            {...register("confirmEmail")}
-            className="w-full p-2 rounded text-black mb-4"
-          />
-
-          {/* Password Input */}
-          <input
-            type="password"
-            placeholder="Enter Password"
-            {...register("password")}
-            className="w-full p-2 rounded text-black mb-4"
-          />
-
-          {/* Validation Error Message */}
-          {generalError && (
-            <p className="text-red-500 text-sm mb-4">{generalError}</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer
-          style={{
-            backgroundColor: "#13547a",
-            border: "none",
-            justifyContent: "center",
-          }}
-        >
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3"
+        <form onSubmit={handleSubmit(handleUpdateEmail)}>
+          <Modal.Body
+            className="space-y-4"
             style={{
               backgroundColor: "#13547a",
-              border: "1px solid whitesmoke",
               color: "whitesmoke",
+              textAlign: "center",
             }}
           >
-            {isSubmitting ? "Updating..." : "Update Email"}
-          </Button>
-        </Modal.Footer>
+            <p>Current Email: {userEmail}</p>
+
+            <input
+              type="email"
+              placeholder="New Email"
+              {...register("newEmail")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.newEmail && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.newEmail.message}
+              </p>
+            )}
+
+            <input
+              type="email"
+              placeholder="Confirm Email"
+              {...register("confirmEmail")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.confirmEmail && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.confirmEmail.message}
+              </p>
+            )}
+
+            <input
+              type="password"
+              placeholder="Enter Password"
+              {...register("password")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.password && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.password.message}
+              </p>
+            )}
+
+            {generalError && (
+              <p className="text-red-500 text-sm mb-4">{generalError}</p>
+            )}
+          </Modal.Body>
+          <Modal.Footer
+            style={{
+              backgroundColor: "#13547a",
+              border: "none",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3"
+              style={{
+                backgroundColor: "#13547a",
+                border: "1px solid whitesmoke",
+                color: "whitesmoke",
+              }}
+            >
+              {isSubmitting ? "Updating..." : "Update Email"}
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal>
     </div>
   );
