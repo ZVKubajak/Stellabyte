@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { uploadFile } from "../services/fileService";
+import { getUserFiles, uploadFile } from "../services/fileService";
 import auth from "../utils/auth";
 import Swal from "sweetalert2";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowUp } from "@fortawesome/free-solid-svg-icons";
@@ -41,6 +40,22 @@ const Upload = () => {
         return;
       }
 
+      const files = await getUserFiles(userId);
+
+      if (!files) {
+        throw Error;
+      }
+
+      if (Array.isArray(files)) {
+        for (let i = 0; i < files.length; i++) {
+          if (selectedFile.name.trim() === files[i].fileName) {
+            console.error("File name must be unique.");
+            setGeneralError("File name must be unique.");
+            return;
+          }
+        }
+      }
+
       await uploadFile(selectedFile, userId);
 
       Swal.fire({
@@ -57,7 +72,11 @@ const Upload = () => {
           navigate("/storage");
         } else {
           if (result.dismiss === Swal.DismissReason.cancel) {
-            navigate("/constellations");
+            navigate("/constellations", {
+              state: {
+                selectedFile,
+              },
+            });
           } else {
             setSelectedFile(null);
             setGeneralError("");
