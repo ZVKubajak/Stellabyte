@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../services/fileService";
 import auth from "../utils/auth";
@@ -24,7 +24,16 @@ const Upload = () => {
     throw new Error("Failed retrieving user.");
   }
 
-  const onSubmit = async () => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+    }
+  };
+
+  const onUpload = async (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
     try {
       if (!selectedFile) {
         console.error("No file selected.");
@@ -32,24 +41,28 @@ const Upload = () => {
         return;
       }
 
-      const result = await uploadFile(selectedFile, userId);
-
-      console.log(result);
+      await uploadFile(selectedFile, userId);
 
       Swal.fire({
-        title: "File Uploaded",
-        text: "Check out your file on the storage page or upload another file.",
+        title: "File Uploaded!",
+        text: "Check out your file on the storage page or view your constellation.",
         icon: "success",
         showCancelButton: true,
+        showCloseButton: true,
         confirmButtonText: "Go to Storage",
-        cancelButtonText: "Upload More",
+        cancelButtonText: "View Art",
         cancelButtonColor: "#3ea381",
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate("/constellation");
+          navigate("/storage");
+        } else {
+          if (result.dismiss === Swal.DismissReason.cancel) {
+            navigate("/constellations");
+          } else {
+            setSelectedFile(null);
+            setGeneralError("");
+          }
         }
-        setSelectedFile(null);
-        setGeneralError("");
       });
     } catch (error) {
       console.error("onSubmit Error:", error);
@@ -73,15 +86,24 @@ const Upload = () => {
           <Form.Group className="flex items-center px-8 gap-2">
             <Form.Control
               type="file"
+              onChange={handleFileChange}
               className="flex-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#286386] focus:border-[#286386]"
             />
-            <button className="py-2 px-[13px] bg-[whitesmoke] border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#286386] focus:border-[#286386]">
+            <button
+              onClick={(e) => onUpload(e)}
+              className="py-2 px-[13px] bg-[whitesmoke] border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#286386] focus:border-[#286386]"
+            >
               <FontAwesomeIcon
                 icon={faCheck}
                 className="text-[#286386] text-lg"
               />
             </button>
           </Form.Group>
+          {generalError && (
+            <p className="text-red-500 text-sm text-left mt-1 ml-10">
+              {generalError}
+            </p>
+          )}
         </Form>
 
         <div className="flex flex-col">
