@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/upload",
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
           <AuthGuard>
             <Upload />
           </AuthGuard>
-        )
+        ),
       },
       {
         path: "/login",
@@ -56,8 +56,8 @@ const router = createBrowserRouter([
           <AuthGuard>
             <Settings />
           </AuthGuard>
-        )
-      }
+        ),
+      },
     ],
   },
 ]);
