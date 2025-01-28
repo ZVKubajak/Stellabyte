@@ -17,7 +17,7 @@ const Home = () => {
           {auth.loggedIn() ? (
             <button
               className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer"
-              onClick={() => navigate("/cloud-storage")}
+              onClick={() => navigate("/upload")}
             >
               Upload Now
             </button>
@@ -81,7 +81,7 @@ const Home = () => {
           </h1>
           <button
             className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer"
-            onClick={() => navigate("/cloud-storage")}
+            onClick={() => navigate("/upload")}
           >
             Create Now
           </button>
