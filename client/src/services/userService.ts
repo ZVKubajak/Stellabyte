@@ -92,10 +92,11 @@ export const createUser = async (email: string, password: string) => {
   }
 };
 
-export const updateUser = async (id: string, email: string) => {
+export const updateUser = async (id: string, email: string, password: string) => {
   try {
     const response = await axios.put(`http://localhost:3001/api/users/${id}`, {
       email,
+      password,
     });
 
     console.log(response);

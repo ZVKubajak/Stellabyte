@@ -50,15 +50,17 @@ const Settings = () => {
 
   const handleShowUpdateEmailModal = () => {
     setIsUpdateEmailOpen(true);
+    reset();
     setGeneralError("");
   };
   const handleCloseUpdateEmailModal = () => {
     setIsUpdateEmailOpen(false);
+    reset();
     setGeneralError("");
   };
 
-  const handleUpdateEmail = async () => {
-    setGeneralError("");
+  const handleUpdateEmail = async (data: TUpdateUserSchema) => {
+    console.log(data);
 
     // if (!newEmail || !confirmEmail) {
     //   setErrorMessage("Please fill in both email fields.");
@@ -161,7 +163,6 @@ const Settings = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal for Update Email */}
       <Modal
         show={isUpdateEmailOpen}
         onHide={handleCloseUpdateEmailModal}
