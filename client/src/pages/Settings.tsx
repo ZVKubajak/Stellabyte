@@ -13,13 +13,6 @@ import { updateUser, deleteUser } from "../services/userService";
 import { login } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 
-// Change useStates
-// - Change isUpdateEmailOpen to isUpdateOpen
-// - Remove setNewEmail & setConfirmEmail
-// - Change errorMessage to generalError
-
-// Add password field to update form.
-
 type TUpdateUserSchema = z.infer<typeof updateUserSchema>;
 type TLoginSchema = z.infer<typeof loginSchema>;
 
@@ -64,13 +57,9 @@ const Settings = () => {
   };
 
   const handleUpdateEmail = async (data: TUpdateUserSchema) => {
-    console.log(data);
-
     try {
       const result = await updateUser(userId, data.newEmail, data.password);
       const parsedResult = userSchema.safeParse(result);
-
-      console.log(parsedResult);
 
       if (!parsedResult.success) {
         console.error("Result is undefined.");
@@ -81,8 +70,6 @@ const Settings = () => {
         email: parsedResult.data.email,
         password: data.password,
       };
-
-      console.log(loginInfo);
 
       auth.logout();
       const token = await login(loginInfo);
@@ -109,14 +96,32 @@ const Settings = () => {
   };
 
   const handleDeleteUser = async () => {
-    if (userId) {
-      try {
-        await deleteUser(userId);
-        localStorage.removeItem("id_token");
-        navigate("/");
-      } catch (err) {
-        throw new Error("Error deleting user.");
+    try {
+      handleCloseDeleteModal();
+
+      const result = await deleteUser(userId);
+      const parsedResult = deleteUserSchema.safeParse(result);
+
+      if (!parsedResult.success) {
+        console.error("Result is undefined.");
+        throw Error;
       }
+
+      Swal.fire({
+        title: "Account Deleted",
+        text: "Hope to see you again soon!",
+        icon: "success",
+      }).then(() => {
+        auth.logout();
+        navigate("/");
+      });
+    } catch (error) {
+      console.error("handleDeleteUser Error:", error);
+      Swal.fire({
+        title: "Whoops!",
+        text: "An error occurred. Please try again.",
+        icon: "error",
+      });
     }
   };
 

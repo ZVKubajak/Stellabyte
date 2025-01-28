@@ -35,5 +35,9 @@ export const updateUserSchema = z
     path: ["confirmEmail"],
   });
 
-export const deleteUserSchema = z.string();
-export const userResErrorSchema = z.string();
+export const deleteUserSchema = z.object({
+  message: z.string(),
+});
+export const userResErrorSchema = z.object({
+  message: z.string(),
+});
