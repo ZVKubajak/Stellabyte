@@ -1,17 +1,30 @@
 import { useState } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { updateUserSchema, deleteUserSchema } from "../schema/userSchema";
 import auth from "../utils/auth";
+import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { deleteUser, updateUser } from "../services/userService";
+import { updateUser, deleteUser } from "../services/userService";
 import { useNavigate } from "react-router-dom";
 
+// Change useStates
+// - Change isUpdateEmailOpen to isUpdateOpen
+// - Remove setNewEmail & setConfirmEmail
+// - Change errorMessage to generalError
+
+// Add password field to update form.
+
+type TUpdateUserSchema = z.infer<typeof updateUserSchema>;
+
 const Settings = () => {
-  const navigate = useNavigate();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdateEmailOpen, setIsUpdateEmailOpen] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [generalError, setGeneralError] = useState("");
+
+  const navigate = useNavigate();
 
   let userId = "";
   let userEmail = "";
@@ -23,16 +36,56 @@ const Settings = () => {
     throw new Error("Failed retrieving user.");
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TUpdateUserSchema>({
+    resolver: zodResolver(updateUserSchema),
+  });
+
   const handleShowDeleteModal = () => setIsDeleteOpen(true);
   const handleCloseDeleteModal = () => setIsDeleteOpen(false);
 
   const handleShowUpdateEmailModal = () => {
     setIsUpdateEmailOpen(true);
-    setNewEmail("");
-    setConfirmEmail("");
-    setErrorMessage("");
+    setGeneralError("");
   };
-  const handleCloseUpdateEmailModal = () => setIsUpdateEmailOpen(false);
+  const handleCloseUpdateEmailModal = () => {
+    setIsUpdateEmailOpen(false);
+    setGeneralError("");
+  };
+
+  const handleUpdateEmail = async () => {
+    setGeneralError("");
+
+    // if (!newEmail || !confirmEmail) {
+    //   setErrorMessage("Please fill in both email fields.");
+    //   return;
+    // }
+
+    // if (newEmail !== confirmEmail) {
+    //   setErrorMessage("Emails do not match.");
+    //   return;
+    // }
+
+    // if (newEmail === userEmail) {
+    //   setErrorMessage("New email must be different from the current email.");
+    //   return;
+    // }
+
+    // if (userId) {
+    //   try {
+    //     await updateUser(userId, newEmail);
+    //     handleCloseUpdateEmailModal();
+    //     auth.logout();
+    //     navigate("/");
+    //   } catch (err) {
+    //     setErrorMessage("Error updating email. Please try again.");
+    //   }
+    // }
+  };
 
   const handleDeleteUser = async () => {
     if (userId) {
@@ -42,37 +95,6 @@ const Settings = () => {
         navigate("/");
       } catch (err) {
         throw new Error("Error deleting user.");
-      }
-    }
-  };
-
-  const handleUpdateEmail = async () => {
-
-    setErrorMessage("");
-
-    if (!newEmail || !confirmEmail) {
-      setErrorMessage("Please fill in both email fields.");
-      return;
-    }
-
-    if (newEmail !== confirmEmail) {
-      setErrorMessage("Emails do not match.");
-      return;
-    }
-
-    if (newEmail === userEmail) {
-      setErrorMessage("New email must be different from the current email.");
-      return;
-    }
-
-    if (userId) {
-      try {
-        await updateUser(userId, newEmail);
-        handleCloseUpdateEmailModal();
-        auth.logout();
-        navigate("/")
-      } catch (err) {
-        setErrorMessage("Error updating email. Please try again.");
       }
     }
   };
@@ -140,7 +162,11 @@ const Settings = () => {
       </Modal>
 
       {/* Modal for Update Email */}
-      <Modal show={isUpdateEmailOpen} onHide={handleCloseUpdateEmailModal} centered>
+      <Modal
+        show={isUpdateEmailOpen}
+        onHide={handleCloseUpdateEmailModal}
+        centered
+      >
         <Modal.Header style={{ backgroundColor: "#13547a", border: "none" }}>
           <Modal.Title
             style={{ color: "whitesmoke", textAlign: "center", width: "100%" }}
@@ -161,24 +187,30 @@ const Settings = () => {
           {/* New Email Input */}
           <input
             type="email"
-            placeholder="Enter new email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="New Email"
+            {...register("newEmail")}
             className="w-full p-2 rounded text-black mb-4"
           />
 
           {/* Confirm New Email Input */}
           <input
             type="email"
-            placeholder="Confirm new email"
-            value={confirmEmail}
-            onChange={(e) => setConfirmEmail(e.target.value)}
+            placeholder="Confirm Email"
+            {...register("confirmEmail")}
+            className="w-full p-2 rounded text-black mb-4"
+          />
+
+          {/* Password Input */}
+          <input
+            type="password"
+            placeholder="Enter Password"
+            {...register("password")}
             className="w-full p-2 rounded text-black mb-4"
           />
 
           {/* Validation Error Message */}
-          {errorMessage && (
-            <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+          {generalError && (
+            <p className="text-red-500 text-sm mb-4">{generalError}</p>
           )}
         </Modal.Body>
         <Modal.Footer
@@ -189,15 +221,16 @@ const Settings = () => {
           }}
         >
           <Button
+            type="submit"
+            disabled={isSubmitting}
             className="w-full py-3"
-            onClick={handleUpdateEmail}
             style={{
               backgroundColor: "#13547a",
               border: "1px solid whitesmoke",
               color: "whitesmoke",
             }}
           >
-            Update Email
+            {isSubmitting ? "Updating..." : "Update Email"}
           </Button>
         </Modal.Footer>
       </Modal>
