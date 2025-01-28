@@ -1,17 +1,27 @@
 import { useState } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { updateUserSchema, deleteUserSchema } from "../schema/userSchema";
+import { userSchema } from "../schema/userSchema";
+import { loginSchema } from "../schema/authSchema";
 import auth from "../utils/auth";
+import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { deleteUser, updateUser } from "../services/userService";
+import { updateUser, deleteUser } from "../services/userService";
+import { login } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 
+type TUpdateUserSchema = z.infer<typeof updateUserSchema>;
+type TLoginSchema = z.infer<typeof loginSchema>;
+
 const Settings = () => {
-  const navigate = useNavigate();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdateEmailOpen, setIsUpdateEmailOpen] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [generalError, setGeneralError] = useState("");
+
+  const navigate = useNavigate();
 
   let userId = "";
   let userEmail = "";
@@ -23,57 +33,95 @@ const Settings = () => {
     throw new Error("Failed retrieving user.");
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TUpdateUserSchema>({
+    resolver: zodResolver(updateUserSchema),
+  });
+
   const handleShowDeleteModal = () => setIsDeleteOpen(true);
   const handleCloseDeleteModal = () => setIsDeleteOpen(false);
 
   const handleShowUpdateEmailModal = () => {
     setIsUpdateEmailOpen(true);
-    setNewEmail("");
-    setConfirmEmail("");
-    setErrorMessage("");
+    reset();
+    setGeneralError("");
   };
-  const handleCloseUpdateEmailModal = () => setIsUpdateEmailOpen(false);
+  const handleCloseUpdateEmailModal = () => {
+    setIsUpdateEmailOpen(false);
+    reset();
+    setGeneralError("");
+  };
+
+  const handleUpdateEmail = async (data: TUpdateUserSchema) => {
+    try {
+      const result = await updateUser(userId, data.newEmail, data.password);
+      const parsedResult = userSchema.safeParse(result);
+
+      if (!parsedResult.success) {
+        console.error("Result is undefined.");
+        throw Error;
+      }
+
+      const loginInfo: TLoginSchema = {
+        email: parsedResult.data.email,
+        password: data.password,
+      };
+
+      auth.logout();
+      const token = await login(loginInfo);
+
+      if (!token) {
+        console.error("Token is undefined");
+        throw Error;
+      }
+
+      auth.login(token);
+      handleCloseUpdateEmailModal();
+
+      Swal.fire({
+        title: "Email Updated!",
+        text: `Your account is now under ${parsedResult.data.email}.`,
+        icon: "success",
+      }).then(() => {
+        navigate("/");
+      });
+    } catch (error) {
+      console.error("handleUpdateEmail Error:", error);
+      setGeneralError("An error occurred. Please try again.");
+    }
+  };
 
   const handleDeleteUser = async () => {
-    if (userId) {
-      try {
-        await deleteUser(userId);
-        localStorage.removeItem("id_token");
-        navigate("/");
-      } catch (err) {
-        throw new Error("Error deleting user.");
+    try {
+      handleCloseDeleteModal();
+
+      const result = await deleteUser(userId);
+      const parsedResult = deleteUserSchema.safeParse(result);
+
+      if (!parsedResult.success) {
+        console.error("Result is undefined.");
+        throw Error;
       }
-    }
-  };
 
-  const handleUpdateEmail = async () => {
-
-    setErrorMessage("");
-
-    if (!newEmail || !confirmEmail) {
-      setErrorMessage("Please fill in both email fields.");
-      return;
-    }
-
-    if (newEmail !== confirmEmail) {
-      setErrorMessage("Emails do not match.");
-      return;
-    }
-
-    if (newEmail === userEmail) {
-      setErrorMessage("New email must be different from the current email.");
-      return;
-    }
-
-    if (userId) {
-      try {
-        await updateUser(userId, newEmail);
-        handleCloseUpdateEmailModal();
+      Swal.fire({
+        title: "Account Deleted",
+        text: "Hope to see you again soon!",
+        icon: "success",
+      }).then(() => {
         auth.logout();
-        navigate("/")
-      } catch (err) {
-        setErrorMessage("Error updating email. Please try again.");
-      }
+        navigate("/");
+      });
+    } catch (error) {
+      console.error("handleDeleteUser Error:", error);
+      Swal.fire({
+        title: "Whoops!",
+        text: "An error occurred. Please try again.",
+        icon: "error",
+      });
     }
   };
 
@@ -139,8 +187,11 @@ const Settings = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal for Update Email */}
-      <Modal show={isUpdateEmailOpen} onHide={handleCloseUpdateEmailModal} centered>
+      <Modal
+        show={isUpdateEmailOpen}
+        onHide={handleCloseUpdateEmailModal}
+        centered
+      >
         <Modal.Header style={{ backgroundColor: "#13547a", border: "none" }}>
           <Modal.Title
             style={{ color: "whitesmoke", textAlign: "center", width: "100%" }}
@@ -148,58 +199,78 @@ const Settings = () => {
             Update Email
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body
-          style={{
-            backgroundColor: "#13547a",
-            color: "whitesmoke",
-            textAlign: "center",
-          }}
-        >
-          {/* Current Email */}
-          <p className="mb-4">Current Email: {userEmail}</p>
-
-          {/* New Email Input */}
-          <input
-            type="email"
-            placeholder="Enter new email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            className="w-full p-2 rounded text-black mb-4"
-          />
-
-          {/* Confirm New Email Input */}
-          <input
-            type="email"
-            placeholder="Confirm new email"
-            value={confirmEmail}
-            onChange={(e) => setConfirmEmail(e.target.value)}
-            className="w-full p-2 rounded text-black mb-4"
-          />
-
-          {/* Validation Error Message */}
-          {errorMessage && (
-            <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer
-          style={{
-            backgroundColor: "#13547a",
-            border: "none",
-            justifyContent: "center",
-          }}
-        >
-          <Button
-            className="w-full py-3"
-            onClick={handleUpdateEmail}
+        <form onSubmit={handleSubmit(handleUpdateEmail)}>
+          <Modal.Body
+            className="space-y-4"
             style={{
               backgroundColor: "#13547a",
-              border: "1px solid whitesmoke",
               color: "whitesmoke",
+              textAlign: "center",
             }}
           >
-            Update Email
-          </Button>
-        </Modal.Footer>
+            <p>Current Email: {userEmail}</p>
+
+            <input
+              type="email"
+              placeholder="New Email"
+              {...register("newEmail")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.newEmail && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.newEmail.message}
+              </p>
+            )}
+
+            <input
+              type="email"
+              placeholder="Confirm Email"
+              {...register("confirmEmail")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.confirmEmail && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.confirmEmail.message}
+              </p>
+            )}
+
+            <input
+              type="password"
+              placeholder="Enter Password"
+              {...register("password")}
+              className="w-full p-2 rounded text-black"
+            />
+            {errors.password && (
+              <p className="text-red-400 text-sm text-left mt-1 ml-1">
+                {errors.password.message}
+              </p>
+            )}
+
+            {generalError && (
+              <p className="text-red-500 text-sm mb-4">{generalError}</p>
+            )}
+          </Modal.Body>
+          <Modal.Footer
+            style={{
+              backgroundColor: "#13547a",
+              border: "none",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3"
+              style={{
+                backgroundColor: "#13547a",
+                border: "1px solid whitesmoke",
+                color: "whitesmoke",
+              }}
+            >
+              {isSubmitting ? "Updating..." : "Update Email"}
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal>
     </div>
   );

@@ -159,11 +159,12 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { email } = req.body;
+  const { email, password } = req.body;
 
   try {
     const parsedId = userIdSchema.safeParse(id);
     const parsedEmail = userEmailSchema.safeParse(email);
+    const parsedPassword = userPasswordSchema.safeParse(password);
 
     if (!parsedId.success) {
       console.error(parsedId.error);
@@ -173,6 +174,12 @@ export const updateUser = async (req: Request, res: Response) => {
 
     if (!parsedEmail.success) {
       console.error(parsedEmail.error);
+      res.status(400).json({ message: "Controller Parsing Error" });
+      return;
+    }
+
+    if (!parsedPassword.success) {
+      console.error(parsedPassword.error);
       res.status(400).json({ message: "Controller Parsing Error" });
       return;
     }
@@ -201,6 +208,17 @@ export const updateUser = async (req: Request, res: Response) => {
 
     if (existingUser) {
       console.error("User with this email already exists.");
+      res.status(403).json({ message: "Forbidden" });
+      return;
+    }
+
+    const passwordIsValid = await bcrypt.compare(
+      parsedPassword.data,
+      user.password
+    );
+
+    if (!passwordIsValid) {
+      console.error("Passwords do not match.");
       res.status(403).json({ message: "Forbidden" });
       return;
     }

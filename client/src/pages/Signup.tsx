@@ -111,8 +111,8 @@ const Signup = () => {
               </label>
               <input
                 id="confirmPassword"
-                placeholder="Confirm password"
                 type="password"
+                placeholder="Confirm Password"
                 {...register("confirmPassword")}
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-lg"
               />

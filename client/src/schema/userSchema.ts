@@ -11,5 +11,33 @@ export const userSchema = z.object({
 
 export const userArraySchema = z.array(userSchema);
 
-export const deleteUserSchema = z.string();
-export const userResErrorSchema = z.string();
+export const updateUserSchema = z
+  .object({
+    newEmail: z.string().email("Invalid email."),
+    confirmEmail: z.string().email(),
+    password: z
+      .string()
+      .refine(
+        (val) =>
+          val.length >= 8 &&
+          val.length <= 20 &&
+          /[a-z]/.test(val) &&
+          /[A-Z]/.test(val) &&
+          /\d/.test(val) &&
+          /[@$!%*?&]/.test(val),
+        {
+          message: "Invalid password.",
+        }
+      ),
+  })
+  .refine((data) => data.newEmail === data.confirmEmail, {
+    message: "Emails do not match.",
+    path: ["confirmEmail"],
+  });
+
+export const deleteUserSchema = z.object({
+  message: z.string(),
+});
+export const userResErrorSchema = z.object({
+  message: z.string(),
+});
