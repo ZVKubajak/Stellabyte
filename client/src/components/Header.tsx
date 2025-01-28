@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { Cross as HamburgerCross } from "hamburger-react";
-import authService from "../utils/auth";
+import auth from "../utils/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useLocation().pathname;
+
+  const handleLogout = () => {
+    auth.logout();
+    navigate("/")
+    window.location.reload();
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,7 +31,7 @@ const Header = () => {
             Stellabyte
           </h1>
           <div className="relative z-10">
-            {authService.loggedIn() ? (
+            {auth.loggedIn() ? (
               <HamburgerCross
                 toggled={isOpen}
                 toggle={setIsOpen}
@@ -46,7 +52,7 @@ const Header = () => {
             isOpen ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div onClick={() => authService.logout()}>
+          <div onClick={() => handleLogout()}>
             <h1>Log Out</h1>
           </div>
         </div>

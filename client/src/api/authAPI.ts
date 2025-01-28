@@ -11,10 +11,7 @@ const signUp = async (userInfo: TSignUpSchema) => {
       email: userInfo.email,
       password: userInfo.password,
     });
-
-    console.log(response);
     const parsedData = tokenSchema.safeParse(response.data);
-    console.log(parsedData);
 
     if (!parsedData.success) {
       console.error("Service Parsing Error:", parsedData.error);
