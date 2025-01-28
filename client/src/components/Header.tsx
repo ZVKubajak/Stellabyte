@@ -57,14 +57,14 @@ const Header = () => {
           }`}
         >
           <div className="flex flex-col items-en">
-            <h1 onClick={() => navigate("/")} className="text-[20px]">Home</h1>
-            <h1 onClick={() => navigate("/upload")} className="text-[20px]">Upload</h1>
-            <h1 onClick={() => navigate("/storage")} className="text-[20px]">Storage</h1>
+            <h1 onClick={() => window.location.href = "/"} className="text-[20px]">Home</h1>
+            <h1 onClick={() => window.location.href = "/upload"} className="text-[20px]">Upload</h1>
+            <h1 onClick={() => window.location.href = "/storage"} className="text-[20px]">Storage</h1>
           </div>
           <div className="w-px bg-[whitesmoke]"></div>
           <div className="flex flex-col items-start">
-            <h1 onClick={() => navigate("/support")} className="text-[20px]">Support</h1>
-            <h1 onClick={() => navigate("/settings")} className="text-[20px]">Settings</h1>
+            <h1 onClick={() => window.location.href = "/support"} className="text-[20px]">Support</h1>
+            <h1 onClick={() => window.location.href = "/settings"} className="text-[20px]">Settings</h1>
             <h1 className="text-[20px]" onClick={() => handleLogout()}>
               Log Out
             </h1>
