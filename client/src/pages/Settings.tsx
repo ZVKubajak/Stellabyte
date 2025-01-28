@@ -3,11 +3,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { updateUserSchema, deleteUserSchema } from "../schema/userSchema";
+import { userSchema } from "../schema/userSchema";
+import { loginSchema } from "../schema/authSchema";
 import auth from "../utils/auth";
 import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { updateUser, deleteUser } from "../services/userService";
+import { login } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 
 // Change useStates
@@ -18,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 // Add password field to update form.
 
 type TUpdateUserSchema = z.infer<typeof updateUserSchema>;
+type TLoginSchema = z.infer<typeof loginSchema>;
 
 const Settings = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -62,31 +66,46 @@ const Settings = () => {
   const handleUpdateEmail = async (data: TUpdateUserSchema) => {
     console.log(data);
 
-    // if (!newEmail || !confirmEmail) {
-    //   setErrorMessage("Please fill in both email fields.");
-    //   return;
-    // }
+    try {
+      const result = await updateUser(userId, data.newEmail, data.password);
+      const parsedResult = userSchema.safeParse(result);
 
-    // if (newEmail !== confirmEmail) {
-    //   setErrorMessage("Emails do not match.");
-    //   return;
-    // }
+      console.log(parsedResult);
 
-    // if (newEmail === userEmail) {
-    //   setErrorMessage("New email must be different from the current email.");
-    //   return;
-    // }
+      if (!parsedResult.success) {
+        console.error("Result is undefined.");
+        throw Error;
+      }
 
-    // if (userId) {
-    //   try {
-    //     await updateUser(userId, newEmail);
-    //     handleCloseUpdateEmailModal();
-    //     auth.logout();
-    //     navigate("/");
-    //   } catch (err) {
-    //     setErrorMessage("Error updating email. Please try again.");
-    //   }
-    // }
+      const loginInfo: TLoginSchema = {
+        email: parsedResult.data.email,
+        password: data.password,
+      };
+
+      console.log(loginInfo);
+
+      auth.logout();
+      const token = await login(loginInfo);
+
+      if (!token) {
+        console.error("Token is undefined");
+        throw Error;
+      }
+
+      auth.login(token);
+      handleCloseUpdateEmailModal();
+
+      Swal.fire({
+        title: "Email Updated!",
+        text: `Your account is now under ${parsedResult.data.email}.`,
+        icon: "success",
+      }).then(() => {
+        navigate("/");
+      });
+    } catch (error) {
+      console.error("handleUpdateEmail Error:", error);
+      setGeneralError("An error occurred. Please try again.");
+    }
   };
 
   const handleDeleteUser = async () => {
