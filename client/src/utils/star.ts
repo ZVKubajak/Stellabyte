@@ -5,7 +5,7 @@ type TStarTokenSchema = z.infer<typeof starTokenSchema>;
 
 class StarService {
   generateStarToken() {
-    const starToken = `star-${Math.random().toString(36).substring(2, 9)}`;
+    const starToken: TStarTokenSchema = `star-${Math.random().toString(36).substring(2, 9)}`;
     localStorage.setItem("star_token", starToken);
   }
 

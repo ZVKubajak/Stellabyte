@@ -89,6 +89,7 @@ const Upload = () => {
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please check if your file is valid and is under 50MB.",
+        icon: "error",
       });
     }
   };
