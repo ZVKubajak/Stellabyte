@@ -33,4 +33,5 @@ export const loginSchema = z.object({
     .regex(/[@$!%*?&]/, "Password must include at least 1 special character."),
 });
 
-export const tokenSchema = z.string().jwt()
+export const tokenSchema = z.string().jwt();
+export const starTokenSchema = z.string().length(12);

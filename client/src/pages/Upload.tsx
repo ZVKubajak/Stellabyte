@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserFiles, uploadFile } from "../services/fileService";
 import auth from "../utils/auth";
+import starAuth from "../utils/star";
 import Swal from "sweetalert2";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,7 +73,8 @@ const Upload = () => {
           navigate("/storage");
         } else {
           if (result.dismiss === Swal.DismissReason.cancel) {
-            navigate("/constellations", {
+            starAuth.generateStarToken();
+            navigate("/constellation", {
               state: uploadedFile,
             });
           } else {

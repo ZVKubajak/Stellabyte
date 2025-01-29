@@ -62,19 +62,19 @@ const Header = () => {
           <div className="flex flex-col items-en">
             <h1
               onClick={() => (window.location.href = "/")}
-              className="text-[20px]"
+              className="text-[20px] cursor-pointer"
             >
               Home
             </h1>
             <h1
               onClick={() => (window.location.href = "/upload")}
-              className="text-[20px]"
+              className="text-[20px] cursor-pointer"
             >
               Upload
             </h1>
             <h1
               onClick={() => (window.location.href = "/storage")}
-              className="text-[20px]"
+              className="text-[20px] cursor-pointer"
             >
               Storage
             </h1>
@@ -83,17 +83,17 @@ const Header = () => {
           <div className="flex flex-col items-start">
             <h1
               onClick={() => (window.location.href = "/support")}
-              className="text-[20px]"
+              className="text-[20px] cursor-pointer"
             >
               Support
             </h1>
             <h1
               onClick={() => (window.location.href = "/settings")}
-              className="text-[20px]"
+              className="text-[20px] cursor-pointer"
             >
               Settings
             </h1>
-            <h1 className="text-[20px]" onClick={() => handleLogout()}>
+            <h1 className="text-[20px] cursor-pointer" onClick={() => handleLogout()}>
               Log Out
             </h1>
           </div>
