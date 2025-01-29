@@ -56,7 +56,7 @@ const Upload = () => {
         }
       }
 
-      await uploadFile(selectedFile, userId);
+      const uploadedFile = await uploadFile(selectedFile, userId);
 
       Swal.fire({
         title: "File Uploaded!",
@@ -73,9 +73,7 @@ const Upload = () => {
         } else {
           if (result.dismiss === Swal.DismissReason.cancel) {
             navigate("/constellations", {
-              state: {
-                selectedFile,
-              },
+              state: uploadedFile,
             });
           } else {
             setSelectedFile(null);
