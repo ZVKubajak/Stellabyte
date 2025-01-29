@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
 import { AuthGuard, LoggedInAuth } from "./components/AuthGuard";
 import Home from "./pages/Home";
+import Upload from "./pages/Upload";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
@@ -19,7 +20,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Home />,
+      },
+      {
+        path: "/upload",
+        element: (
+          <AuthGuard>
+            <Upload />
+          </AuthGuard>
+        ),
       },
       {
         path: "/login",
@@ -47,8 +56,8 @@ const router = createBrowserRouter([
           <AuthGuard>
             <Settings />
           </AuthGuard>
-        )
-      }
+        ),
+      },
     ],
   },
 ]);

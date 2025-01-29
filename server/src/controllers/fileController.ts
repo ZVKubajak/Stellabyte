@@ -39,7 +39,7 @@ export const getAllFiles = async (_req: Request, res: Response) => {
 };
 
 export const getUserFiles = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const userId = req.params.id;
 
   try {
     const parsedUserId = fileUserIdSchema.safeParse(userId);
@@ -65,7 +65,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
 
     if (files.length === 0) {
       console.error("No files found for this user.");
-      res.status(404).json({ message: "No files found for this user." });
+      res.status(200).json({ message: "No files found for this user." });
       return;
     }
 
@@ -77,7 +77,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
 };
 
 export const getFileById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id;
 
   try {
     const parsedId = fileIdSchema.safeParse(id);

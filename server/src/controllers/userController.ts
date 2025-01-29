@@ -5,6 +5,7 @@ import {
   userEmailSchema,
   userPasswordSchema,
 } from "../schema/userSchema";
+import deleteFolder from "../utils/deleteFolder";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -266,6 +267,12 @@ export const deleteUser = async (req: Request, res: Response) => {
       res.status(404).json({ message: "User not found." });
       return;
     }
+
+    deleteFolder(parsedId.data);
+
+    await prisma.file.deleteMany({
+      where: { userId: parsedId.data },
+    });
 
     await prisma.user.delete({
       where: { id: parsedId.data },

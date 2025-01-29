@@ -13,7 +13,11 @@ export const fileSchema = z.object({
 });
 
 // Used in userSchema.
-export const fileArraySchema = z.array(fileSchema);
+export const fileArraySchema = z.array(fileSchema).or(
+  z.object({
+    message: z.string(),
+  })
+);
 
 export const deleteFileSchema = z.string();
 export const fileResErrorSchema = z.string();
