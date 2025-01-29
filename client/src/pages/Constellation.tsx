@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import starAuth from "../utils/star";
 import {
-  handleStarAmount,
+  handleStarQuantity,
   handleConvertArray,
   handleObjectConversion,
+  handleCenterStar,
 } from "../utils/helperFunctions";
 
 interface IStar {
@@ -13,12 +14,20 @@ interface IStar {
   color: string;
 }
 
+interface ICenterStar {
+  starSize: number;
+  color: string;
+}
+
 const Constellation = () => {
-  const [star, setStar] = useState<IStar[]>([]);
+  const [stars, setStars] = useState<IStar[]>([]);
+  const [centerStar, setCenterStar] = useState<ICenterStar>();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const location = useLocation();
   const { fileSize, fileType } = location.state || {};
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  starAuth.deleteStarToken();
 
   // Draw black background on canvas
   useEffect(() => {
@@ -34,17 +43,18 @@ const Constellation = () => {
 
   // Process star data
   useEffect(() => {
-    starAuth.deleteStarToken();
-
-    const everything = () => {
-      return handleObjectConversion(
-        handleConvertArray(handleStarAmount(fileSize))
-      );
+    const generateStars = () => {
+      const amount = handleStarQuantity(fileSize);
+      return handleObjectConversion(handleConvertArray(amount.starAmount));
     };
 
-    const finalStar = everything();
-    setStar(finalStar);
-  }, [fileSize]);
+    const generateCenterStar = () => {
+      return handleCenterStar(fileSize, fileType);
+    };
+
+    setStars(generateStars());
+    setCenterStar(generateCenterStar());
+  }, [fileSize, fileType]);
 
   return (
     <div className="mt-[100px] relative w-[200px] h-[200px]">
@@ -52,18 +62,33 @@ const Constellation = () => {
       <canvas ref={canvasRef} width={300} height={400} />
 
       {/* Map over stars and render as divs */}
-      {star.map((star, index) => (
+      {stars.map((star, index) => (
         <div
           key={index}
-          className={`absolute w-[1.5px] h-[1.5px] bg-${star.color}-300 rounded-full ring shadow-white`}
+          className={`absolute w-[1.5px] h-[1.5px] bg-${star.color}-300 rounded-full`}
           style={{
             left: `${star.x}px`,
             top: `${star.y}px`,
-            backgroundColor: star.color, // Use the star's color
+            backgroundColor: star.color,
             boxShadow: `10px 20px 50px 2px ${star.color}`,
           }}
         />
       ))}
+
+      {centerStar && (
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: `${centerStar.starSize}px`,
+            height: `${centerStar.starSize}px`,
+            left: "150px",
+            top: "200px",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: centerStar.color,
+            boxShadow: `0px 0px 12px 10px ${centerStar?.color}`,
+          }}
+        />
+      )}
     </div>
   );
 };
