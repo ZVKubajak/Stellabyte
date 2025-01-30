@@ -165,7 +165,7 @@ const Support = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#13547a] text-white py-3 rounded hover:bg-blue-700"
+            className="w-full bg-[#09203f] text-white py-3 rounded hover:bg-[#1a2c47]"
           >
             {isSubmitting ? "Sending..." : "Submit"}
           </button>
