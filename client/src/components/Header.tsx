@@ -21,12 +21,15 @@ const Header = () => {
   return (
     <div className="m-3 z-999">
       <header
-        className={`fixed top-3 w-[92%] flex flex-col justify-between items-center overflow-hidden rounded-2xl bg-[#13547a] transition-all duration-300 z-999 shadow-md ${
+        className={`fixed top-3 w-[92%] flex flex-col justify-between items-center overflow-hidden rounded-2xl transition-all duration-300 z-999 ${
           isOpen ? "h-[200px]" : "h-16"
         }`}
       >
+        {/* Glassmorphism background */}
+        <div className="absolute inset-0 glass z-0"></div> {/* Apply the glass effect to the background */}
+
         {/* Header content */}
-        <div className="w-full flex justify-between items-center p-2">
+        <div className="relative z-10 w-full flex justify-between items-center p-2">
           <h1
             onClick={() => navigate("/")}
             className="relative z-10 text-[whitesmoke] text-xl p-0 m-0"
@@ -55,7 +58,7 @@ const Header = () => {
 
         {/* Expandable content with box shadow */}
         <div
-          className={`w-full flex-grow flex flex-row justify-evenly text-[whitesmoke] pb-4 mt-3 z-999 transition-all duration-300 ${
+          className={`w-full flex-grow flex flex-row z-10 justify-evenly text-[whitesmoke] pb-4 mt-3 z-999 transition-all duration-300 ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}
         >
