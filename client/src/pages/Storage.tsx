@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUserFiles, removeFile } from "../services/fileService";
 import { fileSchema } from "../schema/fileSchema";
 import { z } from "zod";
 import auth from "../utils/auth";
+import starAuth from "../utils/star";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faMeteor } from "@fortawesome/free-solid-svg-icons";
 
@@ -10,6 +12,8 @@ type TFileSchema = z.infer<typeof fileSchema>;
 
 const Storage = () => {
   const [userFiles, setUserFiles] = useState<TFileSchema[]>([]);
+
+  const navigate = useNavigate();
 
   let userId = "";
   const profile = auth.getProfile();
@@ -27,6 +31,22 @@ const Storage = () => {
       if (Array.isArray(files)) setUserFiles(files);
     } catch (error) {
       console.error("fetchFiles Error:", error);
+    }
+  };
+
+  const constellizeFile = (file: TFileSchema) => {
+    starAuth.generateStarToken();
+    navigate("/constellation", {
+      state: file,
+    });
+  };
+
+  const removeUserFile = async (id: string, userId: string) => {
+    try {
+      await removeFile(id, userId);
+      fetchFiles();
+    } catch (error) {
+      console.error("removeUserFile Error:", error);
     }
   };
 
@@ -54,9 +74,14 @@ const Storage = () => {
                 <div className="w-1/5 text-xl space-x-2 text-right">
                   <FontAwesomeIcon
                     icon={faMeteor}
+                    onClick={() => constellizeFile(file)}
                     className="text-purple-900"
                   />
-                  <FontAwesomeIcon icon={faXmark} className="text-red-700" />
+                  <FontAwesomeIcon
+                    icon={faXmark}
+                    onClick={() => removeUserFile(file.id, file.userId)}
+                    className="text-red-700"
+                  />
                 </div>
               </div>
             </div>
