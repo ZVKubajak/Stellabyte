@@ -25,8 +25,7 @@ const Header = () => {
           isOpen ? "h-[200px]" : "h-16"
         }`}
       >
-        {/* Glassmorphism background */}
-        <div className="absolute inset-0 glass z-0"></div> {/* Apply the glass effect to the background */}
+        <div className="absolute inset-0 glass z-0"></div>
 
         {/* Header content */}
         <div className="relative z-10 w-full flex justify-between items-center p-2">
