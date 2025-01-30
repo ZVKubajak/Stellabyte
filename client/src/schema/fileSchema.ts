@@ -19,5 +19,8 @@ export const fileArraySchema = z.array(fileSchema).or(
   })
 );
 
-export const deleteFileSchema = z.string();
+export const deleteFileSchema = z.object({
+  message: z.string(),
+});
+
 export const fileResErrorSchema = z.string();
