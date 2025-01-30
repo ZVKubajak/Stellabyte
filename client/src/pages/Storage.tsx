@@ -30,7 +30,11 @@ const Storage = () => {
       const files = await getUserFiles(userId);
       if (!files) throw Error;
 
-      if (Array.isArray(files)) setUserFiles(files);
+      if (Array.isArray(files)) {
+        setUserFiles(files);
+      } else {
+        setUserFiles([]);
+      }
     } catch (error) {
       console.error("fetchFiles Error:", error);
       Swal.fire({
