@@ -42,10 +42,7 @@ const Upload = () => {
       }
 
       const files = await getUserFiles(userId);
-
-      if (!files) {
-        throw Error;
-      }
+      if (!files) throw Error;
 
       if (Array.isArray(files)) {
         for (let i = 0; i < files.length; i++) {
