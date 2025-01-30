@@ -6,11 +6,12 @@ import App from "./App";
 import { AuthGuard, LoggedInAuth, StarGuard } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
-import Constellation from "./pages/Constellation";
+import Storage from "./pages/Storage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
 import Settings from "./pages/Settings";
+import Constellation from "./pages/Constellation";
 import ErrorPage from "./pages/ErrorPage";
 
 const router = createBrowserRouter([
@@ -28,6 +29,14 @@ const router = createBrowserRouter([
         element: (
           <AuthGuard>
             <Upload />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "/storage",
+        element: (
+          <AuthGuard>
+            <Storage />
           </AuthGuard>
         ),
       },
