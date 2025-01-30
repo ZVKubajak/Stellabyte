@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserFiles, uploadFile } from "../services/fileService";
 import auth from "../utils/auth";
+import starAuth from "../utils/star";
 import Swal from "sweetalert2";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -56,7 +57,7 @@ const Upload = () => {
         }
       }
 
-      await uploadFile(selectedFile, userId);
+      const uploadedFile = await uploadFile(selectedFile, userId);
 
       Swal.fire({
         title: "File Uploaded!",
@@ -72,10 +73,9 @@ const Upload = () => {
           navigate("/storage");
         } else {
           if (result.dismiss === Swal.DismissReason.cancel) {
-            navigate("/constellations", {
-              state: {
-                selectedFile,
-              },
+            starAuth.generateStarToken();
+            navigate("/constellation", {
+              state: uploadedFile,
             });
           } else {
             setSelectedFile(null);
@@ -89,6 +89,7 @@ const Upload = () => {
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please check if your file is valid and is under 50MB.",
+        icon: "error",
       });
     }
   };

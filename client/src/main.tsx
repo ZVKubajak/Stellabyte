@@ -3,9 +3,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import { AuthGuard, LoggedInAuth } from "./components/AuthGuard";
+import { AuthGuard, LoggedInAuth, StarGuard } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
+import Constellation from "./pages/Constellation";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
@@ -56,6 +57,14 @@ const router = createBrowserRouter([
           <AuthGuard>
             <Settings />
           </AuthGuard>
+        ),
+      },
+      {
+        path: "/constellation",
+        element: (
+          <StarGuard>
+            <Constellation />
+          </StarGuard>
         ),
       },
     ],
