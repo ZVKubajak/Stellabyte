@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import starAuth from "../utils/star";
 import {
   handleStarQuantity,
@@ -21,41 +21,14 @@ interface ICenterStar {
 
 const Constellation = () => {
   const [stars, setStars] = useState<IStar[]>([]);
-  const [centerStar, setCenterStar] = useState<ICenterStar>();
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
+  const [centerStar, setCenterStar] = useState<ICenterStar | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const modalCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const location = useLocation();
-  const { fileSize, fileType } = location.state || {};
+  const { fileSize = 1000, fileType = "unknown" } = location.state || {};
 
   starAuth.deleteStarToken();
 
-  // Draw black background on canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-  }, []);
-
-  // Redraw canvas content in modal
-  useEffect(() => {
-    if (isModalOpen && modalCanvasRef.current) {
-      const modalCanvas = modalCanvasRef.current;
-      const ctx = modalCanvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, modalCanvas.width, modalCanvas.height);
-      }
-    }
-  }, [isModalOpen]);
-
-  // Process star data
   useEffect(() => {
     const generateStars = () => {
       const amount = handleStarQuantity(fileSize);
@@ -70,57 +43,75 @@ const Constellation = () => {
     setCenterStar(generateCenterStar());
   }, [fileSize, fileType]);
 
-  // Handle canvas click to open modal
-  const handleCanvasClick = () => {
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+  
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+    const nebulaColors = [
+      "rgba(100, 0, 255, 0.2)",
+      "rgba(255, 20, 147, 0.3)",
+      "rgba(0, 191, 255, 0.2)",
+      "rgba(255, 105, 180, 0.25)",
+      "rgba(138, 43, 226, 0.3)"
+    ];
 
-  // Handle closing the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+    nebulaColors.forEach((color) => {
+      ctx.fillStyle = color;
+      ctx.filter = "blur(50px)";
+      ctx.beginPath();
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 100, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  
+    ctx.filter = "none";
+  
+    stars.forEach((star) => {
+      ctx.shadowColor = star.color;
+      ctx.shadowBlur = Math.random() * 8 + 2;
+      ctx.fillStyle = star.color;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  
+    if (centerStar) {
+      const gradient = ctx.createRadialGradient(150, 200, 0, 150, 200, centerStar.starSize);
+      gradient.addColorStop(0, centerStar.color);
+      ctx.fillStyle = gradient;
+      ctx.shadowColor = centerStar.color;
+      ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.arc(150, 200, centerStar.starSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, [stars, centerStar]);
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "constellation.png";
+      link.click();
+    }
   };
 
   return (
     <div className="flex justify-center items-center relative w-full h-screen">
       <div className="flex flex-col items-center">
-        {/* Canvas for background */}
-        <div className="relative">
+        {/* Canvas for background and stars */}
+        <div className="relative ">
           <canvas
             ref={canvasRef}
             width={300}
             height={400}
             className="rounded-[10px] cursor-pointer"
-            onClick={handleCanvasClick} // Open modal on click
           />
-
-          {/* Map over stars and render as divs */}
-          {stars.map((star, index) => (
-            <div
-              key={index}
-              className={`absolute w-[1.5px] h-[1.5px] bg-${star.color}-300 rounded-full`}
-              style={{
-                left: `${star.x}px`,
-                top: `${star.y}px`,
-                backgroundColor: star.color,
-                boxShadow: `10px 20px 50px 2px ${star.color}`,
-              }}
-            />
-          ))}
-
-          {centerStar && (
-            <div
-              className="absolute rounded-full"
-              style={{
-                width: `${centerStar.starSize}px`,
-                height: `${centerStar.starSize}px`,
-                left: "150px",
-                top: "200px",
-                transform: "translate(-50%, -50%)",
-                backgroundColor: centerStar.color,
-                boxShadow: `0px 0px 12px 10px ${centerStar?.color}`,
-              }}
-            />
-          )}
         </div>
 
         {/* Paragraph tag below the canvas */}
@@ -130,52 +121,16 @@ const Constellation = () => {
           <strong>big star</strong> shines as the file type, shaped by its
           overall weight. Together, they create a unique digital constellation.
         </p>
-      </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-75 z-50"
-          onClick={handleCloseModal} // Close modal on background click
+        <button
+          className="text-[whitesmoke] border py-2 px-4 rounded shadow mt-2"
+          onClick={handleDownload}
         >
-          <div className="relative">
-            <canvas
-              ref={modalCanvasRef}
-              width={450} // Slightly larger canvas size
-              height={600}
-              className="rounded-[10px]"
-            />
-            {/* Map over stars and render as divs */}
-            {stars.map((star, index) => (
-              <div
-                key={index}
-                className={`absolute w-[2px] h-[2px] bg-${star.color}-300 rounded-full`}
-                style={{
-                  left: `${star.x * 1.5}px`, // Scale positions for larger canvas
-                  top: `${star.y * 1.5}px`,
-                  backgroundColor: star.color,
-                  boxShadow: `10px 20px 50px 2px ${star.color}`,
-                }}
-              />
-            ))}
+          Download Art
+        </button>
 
-            {centerStar && (
-              <div
-                className="absolute rounded-full"
-                style={{
-                  width: `${centerStar.starSize * 1.5}px`, // Scale center star size
-                  height: `${centerStar.starSize * 1.5}px`,
-                  left: "225px", // Adjusted for larger canvas
-                  top: "300px",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: centerStar.color,
-                  boxShadow: `0px 0px 18px 15px ${centerStar?.color}`, // Enhanced glow
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
+        <Link className="text-[whitesmoke] mt-4" to="/">Take me home</Link>
+      </div>
     </div>
   );
 };
