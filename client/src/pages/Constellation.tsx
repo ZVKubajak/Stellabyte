@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import starAuth from "../utils/star";
 import {
   handleStarQuantity,
@@ -55,8 +55,11 @@ const Constellation = () => {
     const nebulaColors = [
       "rgba(100, 0, 255, 0.2)",
       "rgba(255, 20, 147, 0.3)",
-      "rgba(0, 191, 255, 0.2)"
+      "rgba(0, 191, 255, 0.2)",
+      "rgba(255, 105, 180, 0.25)",
+      "rgba(138, 43, 226, 0.3)"
     ];
+
     nebulaColors.forEach((color) => {
       ctx.fillStyle = color;
       ctx.filter = "blur(50px)";
@@ -125,6 +128,8 @@ const Constellation = () => {
         >
           Download Art
         </button>
+
+        <Link className="text-[whitesmoke] mt-4" to="/">Take me home</Link>
       </div>
     </div>
   );
