@@ -133,13 +133,13 @@ const Settings = () => {
         </h1>
         <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6">
           <button
-            className="text-[whitesmoke] bg-[#13547a] py-3 w-full rounded m-0 hover:bg-[#0e3a5a] transition-colors"
+            className="text-[whitesmoke] bg-[#09203f] py-3 w-full rounded m-0 hover:bg-[#0e3a5a] transition-colors"
             onClick={handleShowUpdateEmailModal}
           >
             Update Email
           </button>
           <button
-            className="text-[whitesmoke] bg-[#ff4444] py-3 w-full rounded m-0 hover:bg-[#cc0000] transition-colors"
+            className="text-[whitesmoke] bg-[#9b1b30] py-3 w-full rounded m-0 hover:bg-[#cc0000] transition-colors"
             onClick={handleShowDeleteModal}
           >
             Delete Account
@@ -149,7 +149,7 @@ const Settings = () => {
 
       {/* Modal for Delete Account */}
       <Modal show={isDeleteOpen} onHide={handleCloseDeleteModal} centered>
-        <Modal.Header style={{ backgroundColor: "#13547a", border: "none" }}>
+        <Modal.Header style={{ backgroundColor: "#09203f", border: "none" }}>
           <Modal.Title
             style={{ color: "whitesmoke", textAlign: "center", width: "100%" }}
           >
@@ -158,7 +158,7 @@ const Settings = () => {
         </Modal.Header>
         <Modal.Body
           style={{
-            backgroundColor: "#13547a",
+            backgroundColor: "#09203f",
             color: "whitesmoke",
             textAlign: "center",
           }}
@@ -168,7 +168,7 @@ const Settings = () => {
         </Modal.Body>
         <Modal.Footer
           style={{
-            backgroundColor: "#13547a",
+            backgroundColor: "#09203f",
             border: "none",
             justifyContent: "center",
           }}
@@ -177,7 +177,7 @@ const Settings = () => {
             className="w-full py-3"
             onClick={handleDeleteUser}
             style={{
-              backgroundColor: "#ff4444",
+              backgroundColor: "#9b1b30",
               border: "none",
               color: "whitesmoke",
             }}

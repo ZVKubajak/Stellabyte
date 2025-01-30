@@ -22,17 +22,19 @@ const Home = () => {
               Upload Now
             </button>
           ) : (
+            
             <button
               className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer"
               onClick={() => navigate("/signup")}
             >
+              
               Get started
             </button>
           )}
         </div>
         <div className="flex">
           <FontAwesomeIcon
-            className="testing text-[100px] text-[#286386] drop-shadow-md opacity-80 blur-[0.5px]"
+            className="testing text-[100px] text-[#1b2d47] drop-shadow-md opacity-80 blur-[0.5px]"
             icon={faCloud}
           />
         </div>
