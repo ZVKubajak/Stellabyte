@@ -5,6 +5,7 @@ import { fileSchema } from "../schema/fileSchema";
 import { z } from "zod";
 import auth from "../utils/auth";
 import starAuth from "../utils/star";
+import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faMeteor } from "@fortawesome/free-solid-svg-icons";
 
@@ -31,6 +32,16 @@ const Storage = () => {
       if (Array.isArray(files)) setUserFiles(files);
     } catch (error) {
       console.error("fetchFiles Error:", error);
+      Swal.fire({
+        title: "Whoops!",
+        text: "An unknown error has occurred. Please try again later.",
+        icon: "warning",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        confirmButtonText: "Return to Home",
+      }).then(() => {
+        navigate("/");
+      });
     }
   };
 
@@ -47,6 +58,11 @@ const Storage = () => {
       fetchFiles();
     } catch (error) {
       console.error("removeUserFile Error:", error);
+      Swal.fire({
+        title: "Whoops!",
+        text: "An error has occurred. Please try again.",
+        icon: "error",
+      });
     }
   };
 
