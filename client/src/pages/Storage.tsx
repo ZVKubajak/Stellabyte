@@ -8,6 +8,7 @@ import starAuth from "../utils/star";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faMeteor } from "@fortawesome/free-solid-svg-icons";
+import Button from "react-bootstrap/Button";
 
 type TFileSchema = z.infer<typeof fileSchema>;
 
@@ -83,9 +84,9 @@ const Storage = () => {
             >
               <div className="flex">
                 <div className="w-4/5">
-                  <p>{file.fileName}</p>
-                  <p>{file.fileType}</p>
-                  <p>{file.fileSize} Bytes</p>
+                  <p className="font-semibold">{file.fileName}</p>
+                  <p className="m-0">{file.fileType}</p>
+                  <p className="m-0">{file.fileSize} Bytes</p>
                 </div>
                 <div className="w-1/5 text-xl space-x-2 text-right">
                   <FontAwesomeIcon
@@ -103,7 +104,14 @@ const Storage = () => {
             </div>
           ))
         ) : (
-          <p>Your storage is empty!</p>
+          <div className="flex flex-col mt-48 mb-72">
+            <p className="text-center text-[whitesmoke] text-2xl">
+              Your storage is empty.
+            </p>
+            <Button onClick={() => navigate("/upload")} className="mx-28">
+              Upload Files
+            </Button>
+          </div>
         )}
       </div>
     </div>
