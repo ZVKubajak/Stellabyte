@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Cross as HamburgerCross } from "hamburger-react";
 import auth from "../utils/auth";
 import { useNavigate, useLocation } from "react-router-dom";
+import BrandLogo from "../../public/logo/brandlogo.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,12 +30,7 @@ const Header = () => {
 
         {/* Header content */}
         <div className="relative z-10 w-full flex justify-between items-center p-2">
-          <h1
-            onClick={() => navigate("/")}
-            className="relative z-10 text-[whitesmoke] text-xl p-0 m-0"
-          >
-            Stellabyte
-          </h1>
+          <img src={BrandLogo} alt="Our apps brand logo" width={125} className="relative z-10 ml-2 blur-none" onClick={() => navigate("/")}/>
           <div className="relative z-10">
             {auth.loggedIn() ? (
               <HamburgerCross
