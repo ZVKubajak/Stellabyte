@@ -78,7 +78,7 @@ const Support = () => {
   };
 
   return (
-    <div className="h-screen p-4 max-w-3xl mx-auto">
+    <div className="h-screen p-4 max-w-3xl mx-auto mb-[200px]">
       <h1 className="text-2xl mt-[100px] mb-[25px] text-center text-[whitesmoke] sm:mt-40">
         Support
       </h1>
@@ -115,7 +115,7 @@ const Support = () => {
             </label>
             {hasEmail && userEmail ? (
               <div className="flex flex-row items-center justify-between border border-[whitesmoke] rounded p-2">
-                <span className="text-[15px] text-[whitesmoke]">
+                <span className="truncate text-[15px] text-[whitesmoke]">
                   {userEmail}
                 </span>
                 <button

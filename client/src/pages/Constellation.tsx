@@ -48,28 +48,34 @@ const Constellation = () => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-  
+
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
     const nebulaColors = [
       "rgba(100, 0, 255, 0.2)",
       "rgba(255, 20, 147, 0.3)",
       "rgba(0, 191, 255, 0.2)",
       "rgba(255, 105, 180, 0.25)",
-      "rgba(138, 43, 226, 0.3)"
+      "rgba(138, 43, 226, 0.3)",
     ];
 
     nebulaColors.forEach((color) => {
       ctx.fillStyle = color;
       ctx.filter = "blur(50px)";
       ctx.beginPath();
-      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 100, 0, Math.PI * 2);
+      ctx.arc(
+        Math.random() * canvas.width,
+        Math.random() * canvas.height,
+        100,
+        0,
+        Math.PI * 2
+      );
       ctx.fill();
     });
-  
+
     ctx.filter = "none";
-  
+
     stars.forEach((star) => {
       ctx.shadowColor = star.color;
       ctx.shadowBlur = Math.random() * 8 + 2;
@@ -78,9 +84,16 @@ const Constellation = () => {
       ctx.arc(star.x, star.y, 1.5, 0, Math.PI * 2);
       ctx.fill();
     });
-  
+
     if (centerStar) {
-      const gradient = ctx.createRadialGradient(150, 200, 0, 150, 200, centerStar.starSize);
+      const gradient = ctx.createRadialGradient(
+        150,
+        200,
+        0,
+        150,
+        200,
+        centerStar.starSize
+      );
       gradient.addColorStop(0, centerStar.color);
       ctx.fillStyle = gradient;
       ctx.shadowColor = centerStar.color;
@@ -102,34 +115,35 @@ const Constellation = () => {
   };
 
   return (
-    <div className="flex justify-center items-center relative w-full h-screen">
-      <div className="flex flex-col items-center">
+    <div className="flex justify-center items-center relative w-full h-screen testing mb-[100px]">
+      <div className="flex flex-col items-center mt-[200px]">
         {/* Canvas for background and stars */}
-        <div className="relative ">
+        <div className="relative testing">
           <canvas
             ref={canvasRef}
             width={300}
             height={400}
             className="rounded-[10px] cursor-pointer"
           />
-        </div>
-
+        </div>{" "}
         {/* Paragraph tag below the canvas */}
-        <p className="mt-4 text-center text-gray-300 mx-3">
-          <strong>Your File's Constellations!</strong> <br />
-          Each tiny star represents your file's size, while the{" "}
-          <strong>big star</strong> shines as the file type, shaped by its
-          overall weight. Together, they create a unique digital constellation.
+        <p className="mt-4 text-center text-gray-300 mx-3 xl:text-[22px]">
+          <strong>Your File's Constellation!</strong> <br />
+          Small stars represent file size, while the <strong>
+            big star
+          </strong>{" "}
+          signifies file type. Together, they form a unique digital
+          constellation.
         </p>
-
         <button
           className="text-[whitesmoke] border py-2 px-4 rounded shadow mt-2"
           onClick={handleDownload}
         >
           Download Art
         </button>
-
-        <Link className="text-[whitesmoke] mt-4" to="/">Take me home</Link>
+        <Link className="text-[whitesmoke] mt-4" to="/">
+          Take me home
+        </Link>
       </div>
     </div>
   );

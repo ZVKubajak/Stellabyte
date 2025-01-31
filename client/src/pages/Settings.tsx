@@ -134,10 +134,10 @@ const Settings = () => {
   return (
     <div className="h-screen flex justify-center items-center sm:mx-12 md:mx-20 lg:mx-28 xl:mx-36 2xl:mx-40">
       <div className="p-4 max-w-3xl w-full">
-        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px] sm:text-3xl md:text-4xl 2xl:text-5xl">
+        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px] sm:text-3xl md:text-4xl 2xl:text-2xl">
           Settings
         </h1>
-        <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6">
+        <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6 lg:w-2/3 lg:mx-auto">
           <button
             className="text-[whitesmoke] bg-[#09203f] py-3 w-full rounded m-0 hover:bg-[#0e3a5a] transition-colors"
             onClick={handleShowUpdateEmailModal}

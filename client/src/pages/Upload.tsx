@@ -98,7 +98,7 @@ const Upload = () => {
   return (
     <div className="text-center h-screen">
 
-      <h1 className="text-[whitesmoke] mt-[200px] mb-[70px]">Upload Your Files</h1>
+      <h1 className="text-[whitesmoke] text-2xl mt-[200px] mb-[70px]">Upload Your Files</h1>
       <div className="flex flex-col justify-between items-center">
         <FontAwesomeIcon
           className="file-upload-icon text-[80px] text-[whitesmoke] drop-shadow-md mb-[50px] testing"
