@@ -16,7 +16,7 @@ const Home = () => {
           </h1>
           {auth.loggedIn() ? (
             <button
-              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer"
+              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer sm:text-lg"
               onClick={() => navigate("/upload")}
             >
               Upload Now
@@ -24,7 +24,7 @@ const Home = () => {
           ) : (
             
             <button
-              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer"
+              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer sm:text-lg"
               onClick={() => navigate("/signup")}
             >
               
@@ -34,7 +34,7 @@ const Home = () => {
         </div>
         <div className="flex">
           <FontAwesomeIcon
-            className="testing text-[100px] text-[#1b2d47] drop-shadow-md opacity-80 blur-[0.5px]"
+            className="testing text-[100px] text-[#1b2d47] drop-shadow-md opacity-80 blur-[0.5px] sm:text-[120px]"
             icon={faCloud}
           />
         </div>
@@ -43,19 +43,19 @@ const Home = () => {
       {/* second section */}
       <div className="mt-[60px]">
         <div className="flex flex-col">
-          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px] sm:text-[27px]">
             Up to 50MB
           </h1>
           <Section text="Our app offers 50MB of free cloud storage for your important files and star maps, ensuring a secure and efficient experience at no cost." />
         </div>
         <div className="flex flex-col mt-[80px]">
-          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px] sm:text-[27px]">
             Cloud Storage
           </h1>
           <Section text="Access your files anytime, anywhere with secure cloud storage. Retrieve your data effortlessly, from any device." />
         </div>
         <div className="flex flex-col mt-[80px]">
-          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px]">
+          <h1 className="text-center text-[whitesmoke] text-[24px] mb-[30px] sm:text-[27px]">
             Easy to use
           </h1>
           <Section text="Effortlessly store and access your files with our user-friendly cloud storage. Retrieve your data anytime, anywhere—simple, fast, and hassle-free." />
@@ -82,7 +82,7 @@ const Home = () => {
             Upload and Create
           </h1>
           <button
-            className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer"
+            className="border border-[whitesmoke] w-1/2 border-[1px] text-[whitesmoke] p-2 rounded-xl cursor-pointer sm:text-xl sm:w-1/3"
             onClick={() => navigate("/upload")}
           >
             Create Now
