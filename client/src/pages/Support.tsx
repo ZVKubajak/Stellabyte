@@ -75,11 +75,11 @@ const Support = () => {
 
   return (
     <div className="h-screen p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl mt-[100px] mb-[25px] text-center text-[whitesmoke]">
+      <h1 className="text-2xl mt-[100px] mb-[25px] text-center text-[whitesmoke] sm:mt-40">
         Support
       </h1>
 
-      <div className="mb-6 border p-4 rounded shadow">
+      <div className="mb-6 border p-4 sm:mx-12 md:mx-20 rounded shadow">
         <p className="text-lg mb-4 text-white text-center">
           Need help? Fill out the form below, and our team will get back to you
           as soon as possible.

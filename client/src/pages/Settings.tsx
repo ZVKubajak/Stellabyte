@@ -126,9 +126,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex justify-center items-center sm:mx-12 md:mx-20">
       <div className="p-4 max-w-3xl w-full">
-        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px]">
+        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px] sm:text-3xl md:text-4xl">
           Settings
         </h1>
         <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6">
@@ -192,7 +192,7 @@ const Settings = () => {
         onHide={handleCloseUpdateEmailModal}
         centered
       >
-        <Modal.Header style={{ backgroundColor: "#13547a", border: "none" }}>
+        <Modal.Header style={{ backgroundColor: "#09203f", border: "none" }}>
           <Modal.Title
             style={{ color: "whitesmoke", textAlign: "center", width: "100%" }}
           >
@@ -203,7 +203,7 @@ const Settings = () => {
           <Modal.Body
             className="space-y-4"
             style={{
-              backgroundColor: "#13547a",
+              backgroundColor: "#09203f",
               color: "whitesmoke",
               textAlign: "center",
             }}
@@ -252,7 +252,7 @@ const Settings = () => {
           </Modal.Body>
           <Modal.Footer
             style={{
-              backgroundColor: "#13547a",
+              backgroundColor: "#09203f",
               border: "none",
               justifyContent: "center",
             }}
@@ -262,7 +262,7 @@ const Settings = () => {
               disabled={isSubmitting}
               className="w-full py-3"
               style={{
-                backgroundColor: "#13547a",
+                backgroundColor: "#09203f",
                 border: "1px solid whitesmoke",
                 color: "whitesmoke",
               }}
