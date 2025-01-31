@@ -14,13 +14,13 @@ const Header = () => {
     navigate("/");
     window.location.reload();
   };
-
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, [pathname]);
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
-    <div className="fixed pt-3 px-3 left-1/2 transform -translate-x-1/2 w-full z-999">
+    <div className="fixed top-3 px-3 left-1/2 transform -translate-x-1/2 w-full z-999">
       <header
         className={`relative flex flex-col justify-between items-center overflow-hidden rounded-2xl transition-all duration-300 z-999 ${
           isOpen ? "h-[200px] lg:h-[130px]" : "h-16"

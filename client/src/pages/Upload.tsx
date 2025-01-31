@@ -60,6 +60,8 @@ const Upload = () => {
         title: "File Uploaded!",
         text: "Check out your file on the storage page or view your constellation.",
         icon: "success",
+        background: "#09203f",
+        color: "#fff",
         showCancelButton: true,
         showCloseButton: true,
         confirmButtonText: "Go to Storage",
@@ -87,13 +89,16 @@ const Upload = () => {
         title: "Whoops!",
         text: "An error has occurred. Please check if your file is valid and is under 50MB.",
         icon: "error",
+        background: "#09203f",
+        color: "#fff",
       });
     }
   };
 
   return (
-    <div className="text-center my-[200px]">
-      <h1 className="text-[whitesmoke] mb-[70px]">Upload Your Files</h1>
+    <div className="text-center h-screen">
+
+      <h1 className="text-[whitesmoke] mt-[200px] mb-[70px]">Upload Your Files</h1>
       <div className="flex flex-col justify-between items-center">
         <FontAwesomeIcon
           className="file-upload-icon text-[80px] text-[whitesmoke] drop-shadow-md mb-[50px] testing"

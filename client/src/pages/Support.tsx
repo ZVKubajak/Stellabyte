@@ -54,6 +54,8 @@ const Support = () => {
           title: "Message Sent!",
           text: "We'll write back to you in the coming days.",
           icon: "success",
+          background: "#09203f",
+          color: "#fff",
         }).then(() => {
           reset();
         });
@@ -63,6 +65,8 @@ const Support = () => {
           title: "Whoops!",
           text: "An error has occurred. Please try again.",
           icon: "error",
+          background: "#09203f",
+          color: "#fff",
         });
       }
 

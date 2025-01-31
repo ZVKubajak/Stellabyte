@@ -40,6 +40,8 @@ const Storage = () => {
         title: "Whoops!",
         text: "An unknown error has occurred. Please try again later.",
         icon: "warning",
+        background: "#09203f",
+        color: "#fff",
         allowOutsideClick: false,
         allowEscapeKey: false,
         confirmButtonText: "Return to Home",
@@ -66,6 +68,8 @@ const Storage = () => {
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
         icon: "error",
+        background: "#09203f",
+        color: "#fff",
       });
     }
   };
