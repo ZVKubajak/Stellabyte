@@ -62,7 +62,6 @@ const Settings = () => {
       const parsedResult = userSchema.safeParse(result);
 
       if (!parsedResult.success) {
-        console.error("Result is undefined.");
         throw Error;
       }
 
@@ -75,7 +74,6 @@ const Settings = () => {
       const token = await login(loginInfo);
 
       if (!token) {
-        console.error("Token is undefined");
         throw Error;
       }
 
@@ -92,7 +90,6 @@ const Settings = () => {
         navigate("/");
       });
     } catch (error) {
-      console.error("handleUpdateEmail Error:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };
@@ -105,7 +102,6 @@ const Settings = () => {
       const parsedResult = deleteUserSchema.safeParse(result);
 
       if (!parsedResult.success) {
-        console.error("Result is undefined.");
         throw Error;
       }
 
@@ -120,7 +116,6 @@ const Settings = () => {
         navigate("/");
       });
     } catch (error) {
-      console.error("handleDeleteUser Error:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error occurred. Please try again.",

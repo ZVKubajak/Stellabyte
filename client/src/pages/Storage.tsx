@@ -35,7 +35,6 @@ const Storage = () => {
         setUserFiles([]);
       }
     } catch (error) {
-      console.error("fetchFiles Error:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An unknown error has occurred. Please try again later.",
@@ -63,7 +62,6 @@ const Storage = () => {
       await removeFile(id, userId);
       fetchFiles();
     } catch (error) {
-      console.error("removeUserFile Error:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
@@ -80,7 +78,9 @@ const Storage = () => {
 
   return (
     <div className="h-screen">
-      <h1 className="text-center text-2xl text-[whitesmoke] mt-[160px]">Storage</h1>
+      <h1 className="text-center text-2xl text-[whitesmoke] mt-[160px]">
+        Storage
+      </h1>
 
       <div className="mt-20 space-y-8 overflow-y-auto max-h-[550px]">
         {" "}

@@ -7,14 +7,10 @@ import {
 
 export const getAllFiles = async () => {
   try {
-    const response = await axios.get(`http://localhost:3001/api/files`);
+    const response = await axios.get(`/api/files`);
 
-    console.log(response);
     const parsedData = fileArraySchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -27,44 +23,30 @@ export const getAllFiles = async () => {
 
 export const getUserFiles = async (userId: string) => {
   try {
-    const response = await axios.get(
-      `http://localhost:3001/api/files/user/${userId}`
-    );
+    const response = await axios.get(`/api/files/user/${userId}`);
 
-    console.log(response);
     const parsedData = fileArraySchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error fetching files by userId:", error);
     throw error;
   }
 };
 
 export const getFileById = async (id: string) => {
   try {
-    const response = await axios.get(
-      `http://localhost:3001/api/files/id/${id}`
-    );
+    const response = await axios.get(`/api/files/id/${id}`);
 
-    console.log(response);
     const parsedData = fileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error fetching file by id:", error);
     throw error;
   }
 };
@@ -75,49 +57,36 @@ export const uploadFile = async (file: File, userId: string) => {
     data.append("file", file);
     data.append("userId", userId);
 
-    const response = await axios.post(`http://localhost:3001/api/files`, data, {
+    const response = await axios.post(`/api/files`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
-    console.log(response);
     const parsedData = fileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error uploading file:", error);
     throw error;
   }
 };
 
 export const removeFile = async (id: string, userId: string) => {
   try {
-    const response = await axios.delete(
-      `http://localhost:3001/api/files/${id}`,
-      {
-        data: { userId },
-      }
-    );
+    const response = await axios.delete(`/api/files/${id}`, {
+      data: { userId },
+    });
 
-    console.log(response);
     const parsedData = deleteFileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error removing file:", error);
     throw error;
   }
 };

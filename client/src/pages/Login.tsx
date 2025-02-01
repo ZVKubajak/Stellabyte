@@ -29,7 +29,6 @@ const Login = () => {
       const token = await login(data);
 
       if (!token) {
-        console.error("Token is undefined.");
         throw Error;
       }
 
@@ -39,7 +38,6 @@ const Login = () => {
       setGeneralError("");
       reset();
     } catch (error) {
-      console.error("Login failed:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };

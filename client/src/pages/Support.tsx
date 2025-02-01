@@ -45,7 +45,6 @@ const Support = () => {
       const parsedResult = responseSchema.safeParse(result);
 
       if (!parsedResult.success) {
-        console.error("Frontend Parsing Error:", parsedResult.error);
         throw Error;
       }
 
@@ -60,7 +59,6 @@ const Support = () => {
           reset();
         });
       } else {
-        console.error("Web3Form Error:", parsedResult.data);
         Swal.fire({
           title: "Whoops!",
           text: "An error has occurred. Please try again.",
@@ -72,7 +70,6 @@ const Support = () => {
 
       setGeneralError("");
     } catch (error) {
-      console.error("onSubmit Error:", error);
       setGeneralError("An error has occurred. Please try again.");
     }
   };

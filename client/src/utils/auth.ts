@@ -23,7 +23,6 @@ class AuthService {
       const currentTime = Date.now() / 1000;
       return decoded.exp < currentTime;
     } catch (error) {
-      console.error("Failed to decode token:", error);
       return true;
     }
   }
@@ -35,7 +34,6 @@ class AuthService {
         const decoded = jwtDecode<{ id: string; email: string }>(token);
         return decoded;
       } catch (error) {
-        console.error("Failed to decode token:", error);
         return null;
       }
     }

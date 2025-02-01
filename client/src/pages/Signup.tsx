@@ -29,7 +29,6 @@ const Signup = () => {
       const token = await signUp(data);
 
       if (!token) {
-        console.error("Token is undefined.");
         throw Error;
       }
 
@@ -39,7 +38,6 @@ const Signup = () => {
       setGeneralError("");
       reset();
     } catch (error) {
-      console.error("Signup failed:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };
