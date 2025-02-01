@@ -23,9 +23,7 @@ export const getAllFiles = async () => {
 
 export const getUserFiles = async (userId: string) => {
   try {
-    const response = await axios.get(
-      `/api/files/user/${userId}`
-    );
+    const response = await axios.get(`/api/files/user/${userId}`);
 
     const parsedData = fileArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -40,9 +38,7 @@ export const getUserFiles = async (userId: string) => {
 
 export const getFileById = async (id: string) => {
   try {
-    const response = await axios.get(
-      `/api/files/id/${id}`
-    );
+    const response = await axios.get(`/api/files/id/${id}`);
 
     const parsedData = fileSchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -80,12 +76,9 @@ export const uploadFile = async (file: File, userId: string) => {
 
 export const removeFile = async (id: string, userId: string) => {
   try {
-    const response = await axios.delete(
-      `/api/files/${id}`,
-      {
-        data: { userId },
-      }
-    );
+    const response = await axios.delete(`/api/files/${id}`, {
+      data: { userId },
+    });
 
     const parsedData = deleteFileSchema.safeParse(response.data);
     if (!parsedData.success) {

@@ -78,7 +78,9 @@ const Storage = () => {
 
   return (
     <div className="h-screen">
-      <h1 className="text-center text-2xl text-[whitesmoke] mt-[160px]">Storage</h1>
+      <h1 className="text-center text-2xl text-[whitesmoke] mt-[160px]">
+        Storage
+      </h1>
 
       <div className="mt-20 space-y-8 overflow-y-auto max-h-[550px]">
         {" "}

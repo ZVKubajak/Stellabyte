@@ -22,9 +22,7 @@ export const getUsers = async () => {
 
 export const getUserById = async (id: string) => {
   try {
-    const response = await axios.get(
-      `/api/users/id/${id}`
-    );
+    const response = await axios.get(`/api/users/id/${id}`);
 
     const parsedData = userSchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -39,9 +37,7 @@ export const getUserById = async (id: string) => {
 
 export const getUserByEmail = async (email: string) => {
   try {
-    const response = await axios.get(
-      `/api/users/email/${email}`
-    );
+    const response = await axios.get(`/api/users/email/${email}`);
 
     const parsedData = userSchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -96,9 +92,7 @@ export const updateUser = async (
 
 export const deleteUser = async (id: string) => {
   try {
-    const response = await axios.delete(
-      `/api/users/${id}`
-    );
+    const response = await axios.delete(`/api/users/${id}`);
 
     const parsedData = deleteUserSchema.safeParse(response.data);
     if (!parsedData.success) {
