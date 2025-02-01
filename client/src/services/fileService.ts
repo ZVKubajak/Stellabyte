@@ -7,7 +7,16 @@ import {
 
 export const getAllFiles = async () => {
   try {
-    const response = await axios.get(`/api/files`);
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
+    const response = await axios.get(`/api/files`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const parsedData = fileArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -16,14 +25,25 @@ export const getAllFiles = async () => {
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error fetching all files:", error);
     throw error;
   }
 };
 
 export const getUserFiles = async (userId: string) => {
   try {
-    const response = await axios.get(`/api/files/user/${userId}`);
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
+    const response = await axios.get(
+      `http://localhost:3001/api/files/user/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const parsedData = fileArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -38,7 +58,16 @@ export const getUserFiles = async (userId: string) => {
 
 export const getFileById = async (id: string) => {
   try {
-    const response = await axios.get(`/api/files/id/${id}`);
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
+    const response = await axios.get(`/api/files/id/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const parsedData = fileSchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -53,13 +82,19 @@ export const getFileById = async (id: string) => {
 
 export const uploadFile = async (file: File, userId: string) => {
   try {
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
     const data = new FormData();
     data.append("file", file);
     data.append("userId", userId);
 
-    const response = await axios.post(`/api/files`, data, {
+    const response = await axios.post(`http://localhost:3001/api/files`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -76,8 +111,16 @@ export const uploadFile = async (file: File, userId: string) => {
 
 export const removeFile = async (id: string, userId: string) => {
   try {
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
     const response = await axios.delete(`/api/files/${id}`, {
       data: { userId },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const parsedData = deleteFileSchema.safeParse(response.data);
