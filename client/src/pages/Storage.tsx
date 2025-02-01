@@ -35,7 +35,6 @@ const Storage = () => {
         setUserFiles([]);
       }
     } catch (error) {
-      console.error("fetchFiles Error:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An unknown error has occurred. Please try again later.",
@@ -63,7 +62,6 @@ const Storage = () => {
       await removeFile(id, userId);
       fetchFiles();
     } catch (error) {
-      console.error("removeUserFile Error:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",

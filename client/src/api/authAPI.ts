@@ -14,13 +14,11 @@ const signUp = async (userInfo: TSignUpSchema) => {
     const parsedData = tokenSchema.safeParse(response.data);
 
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.log("Error signing up user:", error);
     throw error;
   }
 };
@@ -32,18 +30,14 @@ const login = async (userInfo: TLoginSchema) => {
       password: userInfo.password,
     });
 
-    console.log(response);
     const parsedData = tokenSchema.safeParse(response.data);
-    console.log(parsedData);
 
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.log("Error logging in user: ", error);
     throw error;
   }
 };

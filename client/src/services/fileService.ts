@@ -9,12 +9,8 @@ export const getAllFiles = async () => {
   try {
     const response = await axios.get(`http://localhost:3001/api/files`);
 
-    console.log(response);
     const parsedData = fileArraySchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
@@ -31,18 +27,13 @@ export const getUserFiles = async (userId: string) => {
       `http://localhost:3001/api/files/user/${userId}`
     );
 
-    console.log(response);
     const parsedData = fileArraySchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error fetching files by userId:", error);
     throw error;
   }
 };
@@ -53,18 +44,13 @@ export const getFileById = async (id: string) => {
       `http://localhost:3001/api/files/id/${id}`
     );
 
-    console.log(response);
     const parsedData = fileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error fetching file by id:", error);
     throw error;
   }
 };
@@ -81,18 +67,13 @@ export const uploadFile = async (file: File, userId: string) => {
       },
     });
 
-    console.log(response);
     const parsedData = fileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error uploading file:", error);
     throw error;
   }
 };
@@ -106,18 +87,13 @@ export const removeFile = async (id: string, userId: string) => {
       }
     );
 
-    console.log(response);
     const parsedData = deleteFileSchema.safeParse(response.data);
-    console.log(parsedData);
-
     if (!parsedData.success) {
-      console.error("Service Parsing Error:", parsedData.error);
       return;
     }
 
     return parsedData.data;
   } catch (error) {
-    console.error("Error removing file:", error);
     throw error;
   }
 };
