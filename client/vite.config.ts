@@ -19,6 +19,14 @@ export default defineConfig({
     exclude: ["lucide-react"],
   },
   build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
     sourcemap: false,
   },
 });
