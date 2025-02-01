@@ -7,7 +7,7 @@ import {
 
 export const getUsers = async () => {
   try {
-    const response = await axios.get(`http://localhost:3001/api/users`);
+    const response = await axios.get(`/api/users`);
 
     const parsedData = userArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -23,7 +23,7 @@ export const getUsers = async () => {
 export const getUserById = async (id: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3001/api/users/id/${id}`
+      `/api/users/id/${id}`
     );
 
     const parsedData = userSchema.safeParse(response.data);
@@ -40,7 +40,7 @@ export const getUserById = async (id: string) => {
 export const getUserByEmail = async (email: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3001/api/users/email/${email}`
+      `/api/users/email/${email}`
     );
 
     const parsedData = userSchema.safeParse(response.data);
@@ -56,7 +56,7 @@ export const getUserByEmail = async (email: string) => {
 
 export const createUser = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`http://localhost:3001/api/users`, {
+    const response = await axios.post(`/api/users`, {
       email,
       password,
     });
@@ -78,7 +78,7 @@ export const updateUser = async (
   password: string
 ) => {
   try {
-    const response = await axios.put(`http://localhost:3001/api/users/${id}`, {
+    const response = await axios.put(`/api/users/${id}`, {
       email,
       password,
     });
@@ -97,7 +97,7 @@ export const updateUser = async (
 export const deleteUser = async (id: string) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3001/api/users/${id}`
+      `/api/users/${id}`
     );
 
     const parsedData = deleteUserSchema.safeParse(response.data);

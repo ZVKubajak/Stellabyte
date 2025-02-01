@@ -7,7 +7,7 @@ import {
 
 export const getAllFiles = async () => {
   try {
-    const response = await axios.get(`http://localhost:3001/api/files`);
+    const response = await axios.get(`/api/files`);
 
     const parsedData = fileArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -24,7 +24,7 @@ export const getAllFiles = async () => {
 export const getUserFiles = async (userId: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3001/api/files/user/${userId}`
+      `/api/files/user/${userId}`
     );
 
     const parsedData = fileArraySchema.safeParse(response.data);
@@ -41,7 +41,7 @@ export const getUserFiles = async (userId: string) => {
 export const getFileById = async (id: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3001/api/files/id/${id}`
+      `/api/files/id/${id}`
     );
 
     const parsedData = fileSchema.safeParse(response.data);
@@ -61,7 +61,7 @@ export const uploadFile = async (file: File, userId: string) => {
     data.append("file", file);
     data.append("userId", userId);
 
-    const response = await axios.post(`http://localhost:3001/api/files`, data, {
+    const response = await axios.post(`/api/files`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -81,7 +81,7 @@ export const uploadFile = async (file: File, userId: string) => {
 export const removeFile = async (id: string, userId: string) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3001/api/files/${id}`,
+      `/api/files/${id}`,
       {
         data: { userId },
       }
