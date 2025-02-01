@@ -54,6 +54,8 @@ const Support = () => {
           title: "Message Sent!",
           text: "We'll write back to you in the coming days.",
           icon: "success",
+          background: "#09203f",
+          color: "#fff",
         }).then(() => {
           reset();
         });
@@ -63,6 +65,8 @@ const Support = () => {
           title: "Whoops!",
           text: "An error has occurred. Please try again.",
           icon: "error",
+          background: "#09203f",
+          color: "#fff",
         });
       }
 
@@ -74,12 +78,12 @@ const Support = () => {
   };
 
   return (
-    <div className="h-screen p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl mt-[100px] mb-[25px] text-center text-[whitesmoke]">
+    <div className="h-screen p-4 max-w-3xl mx-auto mb-[200px]">
+      <h1 className="text-2xl mt-[100px] mb-[25px] text-center text-[whitesmoke] sm:mt-40">
         Support
       </h1>
 
-      <div className="mb-6 border p-4 rounded shadow">
+      <div className="mb-6 border p-4 sm:mx-12 md:mx-20 rounded shadow">
         <p className="text-lg mb-4 text-white text-center">
           Need help? Fill out the form below, and our team will get back to you
           as soon as possible.
@@ -111,7 +115,7 @@ const Support = () => {
             </label>
             {hasEmail && userEmail ? (
               <div className="flex flex-row items-center justify-between border border-[whitesmoke] rounded p-2">
-                <span className="text-[15px] text-[whitesmoke]">
+                <span className="truncate text-[15px] text-[whitesmoke]">
                   {userEmail}
                 </span>
                 <button

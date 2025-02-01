@@ -86,6 +86,8 @@ const Settings = () => {
         title: "Email Updated!",
         text: `Your account is now under ${parsedResult.data.email}.`,
         icon: "success",
+        background: "#09203f",
+        color: "#fff",
       }).then(() => {
         navigate("/");
       });
@@ -111,6 +113,8 @@ const Settings = () => {
         title: "Account Deleted",
         text: "Hope to see you again soon!",
         icon: "success",
+        background: "#09203f",
+        color: "#fff",
       }).then(() => {
         auth.logout();
         navigate("/");
@@ -121,17 +125,19 @@ const Settings = () => {
         title: "Whoops!",
         text: "An error occurred. Please try again.",
         icon: "error",
+        background: "#09203f",
+        color: "#fff",
       });
     }
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex justify-center items-center sm:mx-12 md:mx-20 lg:mx-28 xl:mx-36 2xl:mx-40">
       <div className="p-4 max-w-3xl w-full">
-        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px]">
+        <h1 className="text-center text-[whitesmoke] text-2xl mb-[25px] sm:text-3xl md:text-4xl 2xl:text-2xl">
           Settings
         </h1>
-        <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6">
+        <div className="mb-6 border p-4 rounded shadow flex flex-col items-center gap-6 lg:w-2/3 lg:mx-auto">
           <button
             className="text-[whitesmoke] bg-[#09203f] py-3 w-full rounded m-0 hover:bg-[#0e3a5a] transition-colors"
             onClick={handleShowUpdateEmailModal}
@@ -192,7 +198,7 @@ const Settings = () => {
         onHide={handleCloseUpdateEmailModal}
         centered
       >
-        <Modal.Header style={{ backgroundColor: "#13547a", border: "none" }}>
+        <Modal.Header style={{ backgroundColor: "#09203f", border: "none" }}>
           <Modal.Title
             style={{ color: "whitesmoke", textAlign: "center", width: "100%" }}
           >
@@ -203,7 +209,7 @@ const Settings = () => {
           <Modal.Body
             className="space-y-4"
             style={{
-              backgroundColor: "#13547a",
+              backgroundColor: "#09203f",
               color: "whitesmoke",
               textAlign: "center",
             }}
@@ -252,7 +258,7 @@ const Settings = () => {
           </Modal.Body>
           <Modal.Footer
             style={{
-              backgroundColor: "#13547a",
+              backgroundColor: "#09203f",
               border: "none",
               justifyContent: "center",
             }}
@@ -262,7 +268,7 @@ const Settings = () => {
               disabled={isSubmitting}
               className="w-full py-3"
               style={{
-                backgroundColor: "#13547a",
+                backgroundColor: "#09203f",
                 border: "1px solid whitesmoke",
                 color: "whitesmoke",
               }}
