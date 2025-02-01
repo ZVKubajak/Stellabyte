@@ -115,7 +115,7 @@ const Constellation = () => {
   };
 
   return (
-    <div className="flex justify-center items-center relative w-full h-screen testing mb-[100px]">
+    <div className="flex justify-center items-center w-full h-screen mb-[100px]">
       <div className="flex flex-col items-center mt-[200px]">
         {/* Canvas for background and stars */}
         <div className="relative testing">

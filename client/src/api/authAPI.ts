@@ -7,12 +7,12 @@ type TLoginSchema = z.infer<typeof loginSchema>;
 
 const signUp = async (userInfo: TSignUpSchema) => {
   try {
-    const response = await axios.post(`/api/auth/signup`, {
+    const response = await axios.post(`/auth/signup`, {
       email: userInfo.email,
       password: userInfo.password,
     });
-    const parsedData = tokenSchema.safeParse(response.data);
 
+    const parsedData = tokenSchema.safeParse(response.data);
     if (!parsedData.success) {
       return;
     }
@@ -25,13 +25,12 @@ const signUp = async (userInfo: TSignUpSchema) => {
 
 const login = async (userInfo: TLoginSchema) => {
   try {
-    const response = await axios.post("/api/auth/login", {
+    const response = await axios.post("/auth/login", {
       email: userInfo.email,
       password: userInfo.password,
     });
 
     const parsedData = tokenSchema.safeParse(response.data);
-
     if (!parsedData.success) {
       return;
     }
