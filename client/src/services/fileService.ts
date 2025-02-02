@@ -37,7 +37,7 @@ export const getUserFiles = async (userId: string) => {
     }
 
     const response = await axios.get(
-      `http://localhost:3001/api/files/user/${userId}`,
+      `/api/files/user/${userId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ export const uploadFile = async (file: File, userId: string) => {
     data.append("file", file);
     data.append("userId", userId);
 
-    const response = await axios.post(`http://localhost:3001/api/files`, data, {
+    const response = await axios.post(`/api/files`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
