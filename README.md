@@ -15,7 +15,7 @@ Stellabyte is a next-generation cloud storage platform built on Amazon S3 for sc
 To get started with **Stellabyte**, clone the repository using `git clone git@github.com:ZVKubajak/Stellabyte.git` and navigate to the project directory with `cd Stellabyte`. Install all dependencies by running `npm run install`, and then start the development server with `npm run start:dev`. You're now ready to explore and use the app!
 
 ## Usage
-In order to use our application, you must go to the browser, and open "https://stellabyte-production.up.railway.app/" and from there you are able to access the app. If you would like to run the application locally, you can perform a "git@github.com:ZVKubajak/Stellabyte.git". From there locally, we can perform a npm run install, and then a npm run start:dev.
+In order to use our application, you must go to the browser, and open "https://stellabyte-production.up.railway.app/" and from there you are able to access the app. If you would like to run the application locally, you can perform a "git clone git@github.com:ZVKubajak/Stellabyte.git". From there locally, we can perform a npm run install, and then a npm run start:dev.
 
 ![image](https://github.com/user-attachments/assets/74cef2cd-4588-4f5d-a54d-ac608fe6d3cf)
 
