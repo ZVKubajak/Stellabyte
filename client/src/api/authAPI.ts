@@ -7,7 +7,7 @@ type TLoginSchema = z.infer<typeof loginSchema>;
 
 const signUp = async (userInfo: TSignUpSchema) => {
   try {
-    const response = await axios.post(`/auth/signup`, {
+    const response = await axios.post(`http://localhost:3001/auth/signup`, {
       email: userInfo.email,
       password: userInfo.password,
     });
@@ -25,7 +25,7 @@ const signUp = async (userInfo: TSignUpSchema) => {
 
 const login = async (userInfo: TLoginSchema) => {
   try {
-    const response = await axios.post("/auth/login", {
+    const response = await axios.post("http://localhost:3001/auth/login", {
       email: userInfo.email,
       password: userInfo.password,
     });
