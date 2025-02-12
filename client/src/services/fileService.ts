@@ -36,14 +36,11 @@ export const getUserFiles = async (userId: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.get(
-      `/api/files/user/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get(`/api/files/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const parsedData = fileArraySchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -104,6 +101,46 @@ export const uploadFile = async (file: File, userId: string) => {
     }
 
     return parsedData.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const downloadFile = async (
+  id: string,
+  userId: string,
+  fileName: string
+) => {
+  try {
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
+    const response = await axios.get(
+      `/api/files/download/${id}?userId=${userId}`,
+      {
+        data: { userId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   } catch (error) {
     throw error;
   }
