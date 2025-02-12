@@ -1,13 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserFiles, removeFile } from "../services/fileService";
+import {
+  getUserFiles,
+  downloadFile,
+  removeFile,
+} from "../services/fileService";
 import { fileSchema } from "../schema/fileSchema";
 import { z } from "zod";
 import auth from "../utils/auth";
 import starAuth from "../utils/star";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faMeteor } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFileArrowDown,
+  faMeteor,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
 type TFileSchema = z.infer<typeof fileSchema>;
 
@@ -57,6 +65,24 @@ const Storage = () => {
     });
   };
 
+  const downloadUserFile = async (
+    id: string,
+    userId: string,
+    fileName: string
+  ) => {
+    try {
+      await downloadFile(id, userId, fileName);
+    } catch (error) {
+      Swal.fire({
+        title: "Whoops!",
+        text: "An error has occurred. Please try again.",
+        icon: "error",
+        background: "#09203f",
+        color: "#fff",
+      });
+    }
+  };
+
   const removeUserFile = async (id: string, userId: string) => {
     try {
       await removeFile(id, userId);
@@ -102,10 +128,17 @@ const Storage = () => {
                   <p className="text-[whitesmoke] m-0">{file.fileType}</p>
                   <p className="text-[whitesmoke] m-0">{file.fileSize} Bytes</p>
                 </div>
-                <div className="w-1/5 text-xl space-x-2 text-right">
+                <div className="w-1/5 text-xl space-x-3 text-right">
                   <FontAwesomeIcon
                     icon={faMeteor}
                     onClick={() => constellizeFile(file)}
+                    className="text-[whitesmoke] cursor-pointer"
+                  />
+                  <FontAwesomeIcon
+                    icon={faFileArrowDown}
+                    onClick={() =>
+                      downloadUserFile(file.id, file.userId, file.fileName)
+                    }
                     className="text-[whitesmoke] cursor-pointer"
                   />
                   <FontAwesomeIcon
@@ -124,7 +157,7 @@ const Storage = () => {
             </p>
             <button
               onClick={() => navigate("/upload")}
-              className="text-[whitesmoke] py-2 px-3 rounded mx-28 bg-[#09203f] mx-auto md:w-1/4 md:text-lg xl:w-1/5"
+              className="text-[whitesmoke] py-2 px-3 rounded mx-28 bg-[#09203f] md:mx-auto md:w-1/4 md:text-lg xl:w-1/5"
             >
               Upload Files
             </button>
