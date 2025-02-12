@@ -63,11 +63,14 @@ export const getFileById = async (id: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.get(`http://localhost:3001/api/files/id/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `http://localhost:3001/api/files/id/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const parsedData = fileSchema.safeParse(response.data);
     if (!parsedData.success) {
@@ -109,6 +112,52 @@ export const uploadFile = async (file: File, userId: string) => {
   }
 };
 
+export const downloadFile = async (id: string, userId: string) => {
+  try {
+    const token = localStorage.getItem("id_token");
+    if (!token) {
+      throw new Error("Authorization token is missing.");
+    }
+
+    const response = await axios.get(
+      `http://localhost:3001/api/files/download/${id}`,
+      {
+        data: { userId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const contentDisposition = response.headers["content-disposition"];
+    let fileName = "downloaded-file";
+
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (match[1]) {
+        fileName = match[1];
+      }
+    }
+
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const removeFile = async (id: string, userId: string) => {
   try {
     const token = localStorage.getItem("id_token");
@@ -116,12 +165,15 @@ export const removeFile = async (id: string, userId: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.delete(`http://localhost:3001/api/files/${id}`, {
-      data: { userId },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.delete(
+      `http://localhost:3001/api/files/${id}`,
+      {
+        data: { userId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const parsedData = deleteFileSchema.safeParse(response.data);
     if (!parsedData.success) {
