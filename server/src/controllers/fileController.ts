@@ -179,7 +179,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 
 export const downloadFile = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { userId } = req.body;
+  const { userId } = req.query;
 
   try {
     const parsedId = fileIdSchema.safeParse(id);
@@ -227,7 +227,6 @@ export const downloadFile = async (req: Request, res: Response) => {
     };
 
     const fileStream = s3.getObject(bucketParams).createReadStream();
-    res.setHeader("Content-Disposition", `attachment; filename=${file.fileName}`);
     res.setHeader("Content-Type", file.fileType);
 
     fileStream.pipe(res);
