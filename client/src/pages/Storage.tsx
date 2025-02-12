@@ -128,7 +128,7 @@ const Storage = () => {
                   <p className="text-[whitesmoke] m-0">{file.fileType}</p>
                   <p className="text-[whitesmoke] m-0">{file.fileSize} Bytes</p>
                 </div>
-                <div className="w-1/5 text-xl space-x-2 text-right">
+                <div className="w-1/5 text-xl space-x-3 text-right">
                   <FontAwesomeIcon
                     icon={faMeteor}
                     onClick={() => constellizeFile(file)}

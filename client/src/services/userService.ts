@@ -12,7 +12,7 @@ export const getUsers = async () => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.get(`http://localhost:3001/api/users`, {
+    const response = await axios.get(`/api/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,7 +36,7 @@ export const getUserById = async (id: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.get(`http://localhost:3001/api/users/id/${id}`, {
+    const response = await axios.get(`/api/users/id/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -60,7 +60,7 @@ export const getUserByEmail = async (email: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.get(`http://localhost:3001/api/users/email/${email}`, {
+    const response = await axios.get(`/api/users/email/${email}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -85,7 +85,7 @@ export const createUser = async (email: string, password: string) => {
     }
 
     const response = await axios.post(
-      `http://localhost:3001/api/users`,
+      `/api/users`,
       {
         email,
         password,
@@ -120,7 +120,7 @@ export const updateUser = async (
     }
 
     const response = await axios.put(
-      `http://localhost:3001/api/users/${id}`,
+      `/api/users/${id}`,
       {
         email,
         password,
@@ -150,7 +150,7 @@ export const deleteUser = async (id: string) => {
       throw new Error("Authorization token is missing.");
     }
 
-    const response = await axios.delete(`http://localhost:3001/api/users/${id}`, {
+    const response = await axios.delete(`/api/users/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
