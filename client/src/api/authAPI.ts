@@ -5,7 +5,7 @@ import { signUpSchema, loginSchema, tokenSchema } from "../schema/authSchema";
 type TSignUpSchema = z.infer<typeof signUpSchema>;
 type TLoginSchema = z.infer<typeof loginSchema>;
 
-const signUp = async (userInfo: TSignUpSchema) => {
+export const signUp = async (userInfo: TSignUpSchema) => {
   try {
     const response = await axios.post(`/auth/signup`, {
       email: userInfo.email,
@@ -19,11 +19,12 @@ const signUp = async (userInfo: TSignUpSchema) => {
 
     return parsedData.data;
   } catch (error) {
+    console.error("Error signing up user:", error);
     throw error;
   }
 };
 
-const login = async (userInfo: TLoginSchema) => {
+export const login = async (userInfo: TLoginSchema) => {
   try {
     const response = await axios.post("/auth/login", {
       email: userInfo.email,
@@ -37,8 +38,7 @@ const login = async (userInfo: TLoginSchema) => {
 
     return parsedData.data;
   } catch (error) {
+    console.error("Error logging in user:", error);
     throw error;
   }
 };
-
-export { signUp, login };

@@ -25,12 +25,16 @@ const Settings = () => {
 
   let userId = "";
   let userEmail = "";
-  const profile = auth.getProfile();
-  if (profile) {
+
+  try {
+    const profile = auth.getProfile();
+
+    if (!profile) throw new Error("Profile not found.");
+
     userId = profile.id;
     userEmail = profile.email;
-  } else {
-    throw new Error("Failed retrieving user.");
+  } catch (error) {
+    console.error("Error getting user profile:", error);
   }
 
   const {
@@ -62,7 +66,7 @@ const Settings = () => {
       const parsedResult = userSchema.safeParse(result);
 
       if (!parsedResult.success) {
-        throw Error;
+        throw new Error("Error parsing user results");
       }
 
       const loginInfo: TLoginSchema = {
@@ -74,7 +78,7 @@ const Settings = () => {
       const token = await login(loginInfo);
 
       if (!token) {
-        throw Error;
+        throw new Error("Token not found.");
       }
 
       auth.login(token);
@@ -90,6 +94,7 @@ const Settings = () => {
         navigate("/");
       });
     } catch (error) {
+      console.error("Error updating user email:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };
@@ -102,7 +107,7 @@ const Settings = () => {
       const parsedResult = deleteUserSchema.safeParse(result);
 
       if (!parsedResult.success) {
-        throw Error;
+        throw new Error("Error parsing user results:");
       }
 
       Swal.fire({
@@ -116,6 +121,7 @@ const Settings = () => {
         navigate("/");
       });
     } catch (error) {
+      console.error("Error deleting user:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error occurred. Please try again.",

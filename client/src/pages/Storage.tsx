@@ -25,17 +25,21 @@ const Storage = () => {
   const navigate = useNavigate();
 
   let userId = "";
-  const profile = auth.getProfile();
-  if (profile) {
+
+  try {
+    const profile = auth.getProfile();
+
+    if (!profile) throw new Error("Profile not found");
+
     userId = profile.id;
-  } else {
-    throw new Error("Failed retrieving user.");
+  } catch (error) {
+    console.error("Error getting user profile:", error);
   }
 
   const fetchFiles = async () => {
     try {
       const files = await getUserFiles(userId);
-      if (!files) throw Error;
+      if (!files) throw new Error("Files not found.");
 
       if (Array.isArray(files)) {
         setUserFiles(files);
@@ -43,6 +47,7 @@ const Storage = () => {
         setUserFiles([]);
       }
     } catch (error) {
+      console.error("Error fetching files:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An unknown error has occurred. Please try again later.",
@@ -73,6 +78,7 @@ const Storage = () => {
     try {
       await downloadFile(id, userId, fileName);
     } catch (error) {
+      console.error("Error downloading user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
@@ -88,6 +94,7 @@ const Storage = () => {
       await removeFile(id, userId);
       fetchFiles();
     } catch (error) {
+      console.error("Error removing user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",

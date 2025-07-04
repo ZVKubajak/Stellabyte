@@ -28,9 +28,7 @@ const Signup = () => {
     try {
       const token = await signUp(data);
 
-      if (!token) {
-        throw Error;
-      }
+      if (!token) throw new Error("Token not found.");
 
       auth.login(token);
       navigate("/");
@@ -38,6 +36,7 @@ const Signup = () => {
       setGeneralError("");
       reset();
     } catch (error) {
+      console.error("Error submitting sign up data:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };
