@@ -29,6 +29,7 @@ export const getAllFiles = async (_req: Request, res: Response) => {
 export const getUserFiles = async (req: Request, res: Response) => {
   const parsedId = idSchema.safeParse(req.params.userId);
   if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
     res.status(400).json({ message: "No ID provided." });
     return;
   }
@@ -52,6 +53,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
 export const getFileById = async (req: Request, res: Response) => {
   const parsedId = idSchema.safeParse(req.params.userId);
   if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
     res.status(400).json({ message: "No ID provided." });
     return;
   }
@@ -75,6 +77,7 @@ export const getFileById = async (req: Request, res: Response) => {
 export const uploadFile = async (req: Request, res: Response) => {
   const parsedId = idSchema.safeParse(req.body.userId);
   if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
     res.status(400).json({ message: "No ID provided." });
     return;
   }
