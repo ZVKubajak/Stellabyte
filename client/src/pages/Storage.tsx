@@ -4,7 +4,7 @@ import {
   getUserFiles,
   downloadFile,
   removeFile,
-} from "../services/fileService";
+} from "../services/fileServices";
 import { fileSchema } from "../schema/fileSchema";
 import { z } from "zod";
 import auth from "../utils/auth";

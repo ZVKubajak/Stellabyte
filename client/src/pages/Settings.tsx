@@ -9,7 +9,7 @@ import auth from "../utils/auth";
 import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { updateUser, deleteUser } from "../services/userService";
+import { updateUser, deleteUser } from "../services/userServices";
 import { login } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 

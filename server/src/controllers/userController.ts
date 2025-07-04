@@ -51,6 +51,7 @@ export const getUserById = async (req: Request, res: Response) => {
       where: { id: data },
       select: {
         id: true,
+        email: true,
         myFiles: true,
         createdAt: true,
         updatedAt: true,
@@ -84,6 +85,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
       where: { email: data },
       select: {
         id: true,
+        email: true,
         myFiles: true,
         createdAt: true,
         updatedAt: true,
@@ -127,6 +129,7 @@ export const createUser = async (req: Request, res: Response) => {
       data: { email: data.email, password: hashedPassword },
       select: {
         id: true,
+        email: true,
         myFiles: true,
         createdAt: true,
         updatedAt: true,
@@ -176,6 +179,7 @@ export const updateUser = async (req: Request, res: Response) => {
       data: { email: !!data.email ? data.email : user.email },
       select: {
         id: true,
+        email: true,
         myFiles: true,
         createdAt: true,
         updatedAt: true,

@@ -15,10 +15,10 @@ const router = Router();
 router.get("/", getAllFiles);
 
 // Get all file entries that belong to a user.
-router.get("/user/:id", getUserFiles);
+router.get("/userId/:userId", getUserFiles);
 
 // Get a file entry by its ID.
-router.get("/id/:id", getFileById);
+router.get("/:id", getFileById);
 
 // Upload a file up to 50MB in size to AWS S3.
 router.post("/", upload.single("file"), uploadFile);

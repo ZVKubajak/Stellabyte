@@ -51,7 +51,7 @@ export const getUserFiles = async (req: Request, res: Response) => {
 };
 
 export const getFileById = async (req: Request, res: Response) => {
-  const parsedId = idSchema.safeParse(req.params.userId);
+  const parsedId = idSchema.safeParse(req.params.id);
   if (!parsedId.success) {
     console.error("Error parsing request:", parsedId.error);
     res.status(400).json({ message: "No ID provided." });
@@ -75,22 +75,20 @@ export const getFileById = async (req: Request, res: Response) => {
 };
 
 export const uploadFile = async (req: Request, res: Response) => {
-  const parsedId = idSchema.safeParse(req.body.userId);
-  if (!parsedId.success) {
-    console.error("Error parsing request:", parsedId.error);
-    res.status(400).json({ message: "No ID provided." });
+  if (!req.userId) {
+    res.status(400).json({ message: "Missing auth token ID." });
     return;
   }
+
+  const { userId } = req;
 
   if (!req.file) {
     res.status(400).json({ message: "No file uploaded." });
     return;
   }
 
-  const { data } = parsedId;
-
   try {
-    const user = await prisma.user.findUnique({ where: { id: data } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       res.status(404).json({ message: "User by given userId not found." });
       return;
@@ -98,7 +96,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 
     const command = new PutObjectCommand({
       Bucket: bucket,
-      Key: `${data}/${req.file.originalname}`,
+      Key: `${userId}/${req.file.originalname}`,
       ContentType: req.file.mimetype,
       Body: req.file.buffer,
       ACL: "public-read",
@@ -108,11 +106,11 @@ export const uploadFile = async (req: Request, res: Response) => {
 
     const newFile = await prisma.file.create({
       data: {
-        userId: data,
+        userId,
         name: req.file.originalname,
         type: req.file.mimetype,
         size: req.file.size,
-        s3Url: `https://${bucket}.s3.amazonaws.com/${data}/${req.file.originalname}`,
+        s3Url: `https://${bucket}.s3.amazonaws.com/${userId}/${req.file.originalname}`,
       },
     });
 
@@ -125,15 +123,20 @@ export const uploadFile = async (req: Request, res: Response) => {
 
 export const downloadFile = async (req: Request, res: Response) => {
   const parsedId = idSchema.safeParse(req.params.id);
-  const parsedUserId = idSchema.safeParse(req.query.userId);
-  if (!parsedId.success || !parsedUserId.success) {
-    console.error("Error parsing request:", parsedId.error, parsedUserId.error);
-    res.status(400).json({ message: "File and/or user ID not provided." });
+  if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
+    res.status(400).json({ message: "File ID not provided." });
     return;
   }
 
   const { data: fileId } = parsedId;
-  const { data: userId } = parsedUserId;
+
+  if (!req.userId) {
+    res.status(400).json({ message: "Missing auth token ID." });
+    return;
+  }
+
+  const { userId } = req;
 
   try {
     const file = await prisma.file.findUnique({ where: { id: fileId } });
@@ -175,15 +178,20 @@ export const downloadFile = async (req: Request, res: Response) => {
 
 export const removeFile = async (req: Request, res: Response) => {
   const parsedId = idSchema.safeParse(req.params.id);
-  const parsedUserId = idSchema.safeParse(req.query.userId);
-  if (!parsedId.success || !parsedUserId.success) {
-    console.error("Error parsing request:", parsedId.error, parsedUserId.error);
-    res.status(400).json({ message: "File and/or user ID not provided." });
+  if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
+    res.status(400).json({ message: "File ID not provided." });
     return;
   }
 
   const { data: fileId } = parsedId;
-  const { data: userId } = parsedUserId;
+
+  if (!req.userId) {
+    res.status(400).json({ message: "Missing auth token ID." });
+    return;
+  }
+
+  const { userId } = req;
 
   try {
     const file = await prisma.file.findUnique({ where: { id: fileId } });
@@ -199,7 +207,7 @@ export const removeFile = async (req: Request, res: Response) => {
 
     const command = new DeleteObjectCommand({
       Bucket: bucket,
-      Key: `${parsedUserId.data}/${file.name}`,
+      Key: `${userId}/${file.name}`,
     });
 
     await s3Client.send(command);

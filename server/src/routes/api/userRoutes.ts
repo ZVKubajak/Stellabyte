@@ -14,7 +14,7 @@ const router = Router();
 router.get("/", getUsers);
 
 // GET a user entry by ID.
-router.get("/id/:id", getUserById);
+router.get("/:id", getUserById);
 
 // Get a user entry by its email.
 router.get("/email/:email", getUserByEmail);
@@ -23,7 +23,7 @@ router.get("/email/:email", getUserByEmail);
 router.post("/", createUser);
 
 // Update a user entry.
-router.put("/:id", updateUser);
+router.put("/", updateUser);
 
 // Delete a user entry.
 router.delete("/:id", deleteUser);

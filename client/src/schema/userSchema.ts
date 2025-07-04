@@ -1,15 +1,16 @@
 import { z } from "zod";
-import { fileArraySchema } from "./fileSchema";
+import fileSchema from "./fileSchema";
 
-export const userSchema = z.object({
+export type User = z.infer<typeof userSchema>;
+export type UpdateUser = z.infer<typeof updateUserSchema>;
+
+const userSchema = z.object({
   id: z.string().length(24),
-  email: z.string().email(),
-  myFiles: fileArraySchema,
+  email: z.string().email().max(200),
+  myFiles: z.array(fileSchema),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
-
-export const userArraySchema = z.array(userSchema);
 
 export const updateUserSchema = z
   .object({
@@ -35,9 +36,4 @@ export const updateUserSchema = z
     path: ["confirmEmail"],
   });
 
-export const deleteUserSchema = z.object({
-  message: z.string(),
-});
-export const userResErrorSchema = z.object({
-  message: z.string(),
-});
+export default userSchema;
