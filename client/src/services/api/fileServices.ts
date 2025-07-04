@@ -1,5 +1,5 @@
-import api from "./api";
-import { File as FileType } from "../schema/fileSchema";
+import api from "../api";
+import { File as FileType } from "../../schema/fileSchema";
 
 export const getUserFiles = async (userId: string) => {
   try {

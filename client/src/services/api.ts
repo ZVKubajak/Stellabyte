@@ -3,7 +3,7 @@ import axios, {
   AxiosInstance,
   AxiosError,
 } from "axios";
-import { getAuthToken } from "../tokens/authToken";
+import authToken from "../tokens/authToken";
 
 const api: AxiosInstance = axios.create({
   baseURL: "http://localhost:3001/api",
@@ -12,7 +12,7 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = getAuthToken();
+    const token = authToken.get();
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },

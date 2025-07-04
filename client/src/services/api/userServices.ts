@@ -1,5 +1,5 @@
-import api from "./api";
-import { User, UpdateUser } from "../schema/userSchema";
+import api from "../api";
+import { User, UpdateUser } from "../../schema/userSchema";
 
 export const getUserById = async (id: string) => {
   try {

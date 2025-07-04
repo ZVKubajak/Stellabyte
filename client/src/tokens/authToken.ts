@@ -1,29 +1,33 @@
-const key = "auth_token";
+class AuthToken {
+  private static key = "auth_token";
 
-export const storeAuthToken = (token: string) => {
-  try {
-    localStorage.setItem(key, token);
-  } catch (error) {
-    console.error("[tokens] Error storing auth token:", error);
-    throw error;
+  store(token: string) {
+    try {
+      localStorage.setItem(AuthToken.key, token);
+    } catch (error) {
+      console.error("[AuthToken] Error storing token:", error);
+      throw error;
+    }
   }
-};
 
-export const getAuthToken = () => {
-  try {
-    const token = localStorage.getItem(key);
-    return token;
-  } catch (error) {
-    console.error("[tokens] Error fetching auth token:", error);
-    return null;
+  get() {
+    try {
+      return localStorage.getItem(AuthToken.key);
+    } catch (error) {
+      console.error("[AuthToken] Error fetching token:", error);
+      return null;
+    }
   }
-};
 
-export const removeAuthToken = () => {
-  try {
-    localStorage.removeItem(key);
-  } catch (error) {
-    console.error("[tokens] Error removing auth token:", error);
-    throw error;
+  remove() {
+    try {
+      localStorage.removeItem(AuthToken.key);
+    } catch (error) {
+      console.error("[AuthToken] Error removing token:", error);
+      throw error;
+    }
   }
-};
+}
+
+const authToken = new AuthToken();
+export default authToken;

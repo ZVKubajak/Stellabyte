@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserFiles, uploadFile } from "../services/fileServices";
+import { getUserFiles, uploadFile } from "../services/api/fileServices";
 import auth from "../utils/auth";
 import starAuth from "../utils/star";
 import Swal from "sweetalert2";
