@@ -3,7 +3,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import { AuthGuard, LoggedInAuth, StarGuard } from "./components/AuthGuard";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Storage from "./pages/Storage";
@@ -13,6 +12,7 @@ import Support from "./pages/Support";
 import Settings from "./pages/Settings";
 import Constellation from "./pages/Constellation";
 import ErrorPage from "./pages/ErrorPage";
+import { AuthGuard, LoggedInAuth, StarGuard } from "./components/AuthGuard";
 
 const router = createBrowserRouter([
   {
