@@ -1,33 +1,31 @@
-import AWS from "../config/awsConfig";
-import dotenv from "dotenv";
+import s3Client from "../config/awsConfig";
+import { ListObjectsCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 
-dotenv.config();
-
-const s3 = new AWS.S3();
 const bucket = process.env.BUCKET_NAME!;
 
 const deleteFolder = async (id: string) => {
   try {
-    const prefix = `${id}/`;
-    const listParams = {
+    const listCommand = new ListObjectsCommand({
       Bucket: bucket,
-      Prefix: prefix,
-    };
+      Prefix: id + "/",
+    });
 
-    const listedObjects = await s3.listObjectsV2(listParams).promise();
+    const listedObjects = await s3Client.send(listCommand);
     if (listedObjects.Contents && listedObjects.Contents.length > 0) {
-      const deleteParams = {
+      const deleteCommand = new DeleteObjectsCommand({
         Bucket: bucket,
         Delete: {
-          Objects: listedObjects.Contents.map((obj) => ({ Key: obj.Key! })),
-          Quiet: true,
+          Objects: listedObjects.Contents.map((object) => ({
+            Key: object.Key!,
+          })),
         },
-      };
+      });
 
-      await s3.deleteObjects(deleteParams).promise();
+      await s3Client.send(deleteCommand);
     }
   } catch (error) {
-    console.error("Error deleting user S3 folder:", error);
+    console.error(`Error deleting user-${id}'s S3 folder:`, error);
+    throw error;
   }
 };
 
