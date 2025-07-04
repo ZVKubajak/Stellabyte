@@ -1,48 +1,51 @@
 import { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { updateUserSchema, deleteUserSchema } from "../schema/userSchema";
-import { userSchema } from "../schema/userSchema";
-import { loginSchema } from "../schema/authSchema";
-import auth from "../utils/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { updateUser, deleteUser } from "../services/userService";
-import { login } from "../api/authAPI";
-import { useNavigate } from "react-router-dom";
-
-type TUpdateUserSchema = z.infer<typeof updateUserSchema>;
-type TLoginSchema = z.infer<typeof loginSchema>;
+import { updateUserSchema, UpdateUser } from "../schema/userSchema";
+import { Login } from "../schema/authSchema";
+import authToken from "../tokens/authToken";
+import { updateUser, deleteUser } from "../services/api/userServices";
+import { login } from "../services/authServices";
 
 const Settings = () => {
+  const navigate = useNavigate();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdateEmailOpen, setIsUpdateEmailOpen] = useState(false);
   const [generalError, setGeneralError] = useState("");
-
-  const navigate = useNavigate();
 
   let userId = "";
   let userEmail = "";
 
   try {
-    const profile = auth.getProfile();
+    const profile = authToken.getProfile();
+    if (!profile) throw new Error("User profile not found.");
 
-    if (!profile) throw new Error("Profile not found.");
-
-    userId = profile.id;
+    userId = profile.userId;
     userEmail = profile.email;
   } catch (error) {
-    console.error("Error getting user profile:", error);
+    console.error("[Settings.tsx] Failed to fetch user's profile:", error);
+    Swal.fire({
+      title: "Whoops!",
+      text: "An unknown error has occurred. Please try again later.",
+      icon: "warning",
+      background: "#09203f",
+      color: "#fff",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Return to Home",
+    }).then(() => navigate("/"));
   }
 
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
+    handleSubmit,
     reset,
-  } = useForm<TUpdateUserSchema>({
+  } = useForm<UpdateUser>({
     resolver: zodResolver(updateUserSchema),
   });
 
@@ -60,33 +63,22 @@ const Settings = () => {
     setGeneralError("");
   };
 
-  const handleUpdateEmail = async (data: TUpdateUserSchema) => {
+  const handleUpdateEmail = handleSubmit(async (data) => {
     try {
-      const result = await updateUser(userId, data.newEmail, data.password);
-      const parsedResult = userSchema.safeParse(result);
+      const updatedUser = await updateUser(data);
 
-      if (!parsedResult.success) {
-        throw new Error("Error parsing user results");
-      }
-
-      const loginInfo: TLoginSchema = {
-        email: parsedResult.data.email,
+      const loginInfo: Login = {
+        email: updatedUser.email,
         password: data.password,
       };
 
-      auth.logout();
-      const token = await login(loginInfo);
-
-      if (!token) {
-        throw new Error("Token not found.");
-      }
-
-      auth.login(token);
+      authToken.remove();
+      await login(loginInfo);
       handleCloseUpdateEmailModal();
 
       Swal.fire({
         title: "Email Updated!",
-        text: `Your account is now under ${parsedResult.data.email}.`,
+        text: `Your account is now under ${updatedUser.email}.`,
         icon: "success",
         background: "#09203f",
         color: "#fff",
@@ -94,21 +86,15 @@ const Settings = () => {
         navigate("/");
       });
     } catch (error) {
-      console.error("Error updating user email:", error);
+      console.error("[Settings.tsx] Failed to update user's email:", error);
       setGeneralError("An error occurred. Please try again.");
     }
-  };
+  });
 
   const handleDeleteUser = async () => {
     try {
       handleCloseDeleteModal();
-
-      const result = await deleteUser(userId);
-      const parsedResult = deleteUserSchema.safeParse(result);
-
-      if (!parsedResult.success) {
-        throw new Error("Error parsing user results:");
-      }
+      await deleteUser(userId);
 
       Swal.fire({
         title: "Account Deleted",
@@ -117,11 +103,11 @@ const Settings = () => {
         background: "#09203f",
         color: "#fff",
       }).then(() => {
-        auth.logout();
+        authToken.remove();
         navigate("/");
       });
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("[Settings.tsx] Failed to delete user:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error occurred. Please try again.",
@@ -206,7 +192,7 @@ const Settings = () => {
             Update Email
           </Modal.Title>
         </Modal.Header>
-        <form onSubmit={handleSubmit(handleUpdateEmail)}>
+        <form onSubmit={handleUpdateEmail}>
           <Modal.Body
             className="space-y-4"
             style={{

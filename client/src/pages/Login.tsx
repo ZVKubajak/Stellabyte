@@ -1,45 +1,34 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { login } from "../api/authAPI";
-import { loginSchema } from "../schema/authSchema";
-import auth from "../utils/auth";
-
-type TLoginSchema = z.infer<typeof loginSchema>;
+import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "../services/authServices";
+import { loginSchema, Login as LoginType } from "../schema/authSchema";
 
 const Login = () => {
-  const [generalError, setGeneralError] = useState<string>("");
-
   const navigate = useNavigate();
+  const [generalError, setGeneralError] = useState<string>("");
 
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
+    handleSubmit,
     reset,
-  } = useForm<TLoginSchema>({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm<LoginType>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = async (data: TLoginSchema) => {
+  const handleLogin = handleSubmit(async (data) => {
     try {
-      const token = await login(data);
-
-      if (!token) throw new Error("Token not found.")
-
-      auth.login(token);
-      navigate("/");
+      await login(data);
 
       setGeneralError("");
       reset();
+
+      navigate("/");
     } catch (error) {
-      console.error("Error submitting log in info:", error);
+      console.error("[Login.tsx] Failed to login user:", error);
       setGeneralError("An error occurred. Please try again.");
     }
-  };
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center py-16 px-6 sm:px-8 lg:px-12">
@@ -55,7 +44,8 @@ const Login = () => {
             </Link>
           </p>
         </div>
-        <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+
+        <form className="space-y-8" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm space-y-6">
             <div>
               <label

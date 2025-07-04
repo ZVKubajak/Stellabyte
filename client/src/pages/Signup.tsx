@@ -1,45 +1,34 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { signUp } from "../api/authAPI";
-import { signUpSchema } from "../schema/authSchema";
-import auth from "../utils/auth";
-
-type TSignUpSchema = z.infer<typeof signUpSchema>;
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signup } from "../services/authServices";
+import { signupSchema, Signup as SignupType } from "../schema/authSchema";
 
 const Signup = () => {
-  const [generalError, setGeneralError] = useState<string>("");
-
   const navigate = useNavigate();
+  const [generalError, setGeneralError] = useState<string>("");
 
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
+    handleSubmit,
     reset,
-  } = useForm<TSignUpSchema>({
-    resolver: zodResolver(signUpSchema),
-  });
+  } = useForm<SignupType>({ resolver: zodResolver(signupSchema) });
 
-  const onSubmit = async (data: TSignUpSchema) => {
+  const handleSignup = handleSubmit(async (data) => {
     try {
-      const token = await signUp(data);
-
-      if (!token) throw new Error("Token not found.");
-
-      auth.login(token);
-      navigate("/");
+      await signup(data);
 
       setGeneralError("");
       reset();
+
+      navigate("/");
     } catch (error) {
-      console.error("Error submitting sign up data:", error);
-      setGeneralError("An error occurred. Please try again.");
+      console.error("[Signup.tsx] Failed to signup user:", error);
+      setGeneralError("An error occurred. Please try again");
     }
-  };
+  });
 
   return (
     <div className="h-screen flex items-center justify-center py-16 px-6 sm:px-8 lg:px-12">
@@ -55,7 +44,8 @@ const Signup = () => {
             </Link>
           </p>
         </div>
-        <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+
+        <form className="space-y-8" onSubmit={handleSignup}>
           <div className="rounded-md shadow-sm space-y-6">
             <div>
               <label

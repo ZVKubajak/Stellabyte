@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Cross as HamburgerCross } from "hamburger-react";
-import auth from "../utils/auth";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BrandLogo from "../../public/logo/brandlogo.png";
+import authToken from "../tokens/authToken";
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useLocation().pathname;
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
-    auth.logout();
+    authToken.remove();
     navigate("/");
     window.location.reload();
   };
@@ -37,7 +37,7 @@ const Header = () => {
             className="relative z-10 ml-2 blur-none cursor-pointer"
             onClick={() => navigate("/")}
           />
-          <div className="hidden xl:block xl:flex xl:flex-row xl:gap-[100px]">
+          <div className="hidden xl:flex xl:flex-row xl:gap-[100px]">
             <h1
               onClick={() => (window.location.href = "/upload")}
               className="text-[20px] text-[whitesmoke] cursor-pointer lg:m-0"
@@ -63,8 +63,9 @@ const Header = () => {
               Settings
             </h1>
           </div>
+
           <div className="hidden xl:block">
-            {auth.loggedIn() ? (
+            {!!authToken.get() ? (
               <h1
                 className="text-[20px] cursor-pointer text-[whitesmoke] lg:m-0 xl:mr-3"
                 onClick={() => handleLogout()}
@@ -82,8 +83,9 @@ const Header = () => {
               </div>
             )}
           </div>
+
           <div className="relative z-10 xl:hidden">
-            {auth.loggedIn() ? (
+            {!!authToken.get() ? (
               <HamburgerCross
                 toggled={isOpen}
                 toggle={setIsOpen}
@@ -130,6 +132,7 @@ const Header = () => {
               Storage
             </h1>
           </div>
+
           <div className="w-px bg-[whitesmoke]"></div>
           <div className="flex flex-col lg:flex-row lg:items-center lg:gap-3">
             <h1
