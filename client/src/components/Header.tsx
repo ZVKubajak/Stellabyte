@@ -37,7 +37,7 @@ const Header = () => {
             className="relative z-10 ml-2 blur-none cursor-pointer"
             onClick={() => navigate("/")}
           />
-          <div className="hidden xl:block xl:flex xl:flex-row xl:gap-[100px]">
+          <div className="hidden xl:flex xl:flex-row xl:gap-[100px]">
             <h1
               onClick={() => (window.location.href = "/upload")}
               className="text-[20px] text-[whitesmoke] cursor-pointer lg:m-0"

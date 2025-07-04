@@ -1,6 +1,5 @@
 import api from "../api";
 import { User, UpdateUser } from "../../schema/userSchema";
-import authToken from "../../tokens/authToken";
 
 export const getUserById = async (id: string) => {
   try {
