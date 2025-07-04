@@ -17,11 +17,15 @@ const Upload = () => {
   const navigate = useNavigate();
 
   let userId = "";
-  const profile = auth.getProfile();
-  if (profile) {
+
+  try {
+    const profile = auth.getProfile();
+
+    if (!profile) throw new Error("Profile not found.");
+
     userId = profile.id;
-  } else {
-    throw new Error("Failed retrieving user.");
+  } catch (error) {
+    console.error("Error getting user profile:", error);
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

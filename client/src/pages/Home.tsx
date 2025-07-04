@@ -23,7 +23,7 @@ const Home = () => {
             </button>
           ) : (
             <button
-              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer sm:text-lg md:text-xl lg:text-[20px] xl:text-[23px] 2xl:text-[28px]"
+              className="text-[whitesmoke] border p-2 rounded-xl cursor-pointer sm:text-lg md:text-xl lg:text-[20px] xl:text-[20px] 2xl:text-[28px]"
               onClick={() => navigate("/signup")}
             >
               Get started

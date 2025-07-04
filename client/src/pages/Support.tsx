@@ -13,8 +13,16 @@ const Support = () => {
   const [generalError, setGeneralError] = useState<string>("");
 
   let userEmail = "";
-  const profile = auth.getProfile();
-  if (profile) userEmail = profile.email;
+
+  try {
+    const profile = auth.getProfile();
+
+    if (!profile) throw new Error("Profile not found.");
+
+    userEmail = profile.email;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+  }
 
   const {
     register,
