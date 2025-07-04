@@ -53,7 +53,7 @@ const Storage = () => {
     try {
       await downloadFile(id, fileName);
     } catch (error) {
-      console.error("Failed to download user's file:", error);
+      console.error("[Storage.tsx] Failed to download user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
@@ -69,7 +69,7 @@ const Storage = () => {
       await removeFile(id);
       await fetchFiles();
     } catch (error) {
-      console.error("Failed to remove user's file:", error);
+      console.error("[Storage.tsx] Failed to remove user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
