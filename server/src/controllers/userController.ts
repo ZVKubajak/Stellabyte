@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import {
-  userIdSchema,
-  userEmailSchema,
-  userPasswordSchema,
+  emailSchema,
+  createUserSchema,
+  updateUserSchema,
 } from "../schema/userSchema";
+import idSchema from "../schema/idSchema";
 import deleteFolder from "../utils/deleteFolder";
 import bcrypt from "bcrypt";
 
@@ -24,7 +25,6 @@ export const getUsers = async (_req: Request, res: Response) => {
     });
 
     if (users.length === 0) {
-      console.error("No users found.");
       res.status(404).json({ message: "No users found." });
       return;
     }
@@ -32,23 +32,23 @@ export const getUsers = async (_req: Request, res: Response) => {
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching all users:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const getUserById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const parsedId = idSchema.safeParse(req.params.id);
+  if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
+    res.status(404).json({ message: "Request Parsing Error" });
+    return;
+  }
+
+  const { data } = parsedId;
 
   try {
-    const parsedId = userIdSchema.safeParse(id);
-    if (!parsedId.success) {
-      console.error(parsedId.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
     const user = await prisma.user.findUnique({
-      where: { id: parsedId.data },
+      where: { id: data },
       select: {
         id: true,
         email: true,
@@ -59,7 +59,6 @@ export const getUserById = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      console.error("User not found.");
       res.status(404).json({ message: "User not found." });
       return;
     }
@@ -67,24 +66,23 @@ export const getUserById = async (req: Request, res: Response) => {
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user by ID:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const getUserByEmail = async (req: Request, res: Response) => {
-  const { email } = req.params;
+  const parsedEmail = emailSchema.safeParse(req.params.email);
+  if (!parsedEmail.success) {
+    console.error("Error parsing request:", parsedEmail.error);
+    res.status(400).json({ message: "Request Parsing Error" });
+    return;
+  }
+
+  const { data } = parsedEmail;
 
   try {
-    const parsedEmail = userEmailSchema.safeParse(email);
-
-    if (!parsedEmail.success) {
-      console.error(parsedEmail.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
     const user = await prisma.user.findUnique({
-      where: { email: parsedEmail.data },
+      where: { email: data },
       select: {
         id: true,
         email: true,
@@ -95,7 +93,6 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      console.error("User not found.");
       res.status(404).json({ message: "User not found." });
       return;
     }
@@ -103,45 +100,33 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user by email:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const parsedReq = createUserSchema.safeParse(req.body);
+  if (!parsedReq.success) {
+    console.error("Request parsing error:", parsedReq.error);
+    res.status(400).json({ message: "Request Parsing Error" });
+    return;
+  }
+
+  const { data } = parsedReq;
 
   try {
-    const parsedEmail = userEmailSchema.safeParse(email);
-    const parsedPassword = userPasswordSchema.safeParse(password);
-
-    if (!parsedEmail.success) {
-      console.error(parsedEmail.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    if (!parsedPassword.success) {
-      console.error(parsedPassword.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    const hashedPassword = await bcrypt.hash(parsedPassword.data, saltRounds);
-
     const existingUser = await prisma.user.findUnique({
-      where: { email: parsedEmail.data },
+      where: { email: data.email },
     });
-
     if (existingUser) {
-      console.error("A user with this email already exists.");
-      res
-        .status(400)
-        .json({ message: "A user with this email already exists." });
+      res.status(409).json({ message: "User with this email already exists." });
       return;
     }
+
+    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
     const newUser = await prisma.user.create({
-      data: { email: parsedEmail.data, password: hashedPassword },
+      data: { email: data.email, password: hashedPassword },
       select: {
         id: true,
         email: true,
@@ -154,82 +139,51 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { email, password } = req.body;
+  if (!req.auth) {
+    res.status(400).json({ message: "Missing auth token ID." });
+    return;
+  }
+
+  const { userId } = req.auth;
+
+  const parsedReq = updateUserSchema.safeParse(req.body);
+  if (!parsedReq.success) {
+    console.error("Error parsing request:", parsedReq.error);
+    res.status(400).json({ message: "Request Parsing Error" });
+    return;
+  }
+
+  const { data } = parsedReq;
 
   try {
-    const parsedId = userIdSchema.safeParse(id);
-    const parsedEmail = userEmailSchema.safeParse(email);
-    const parsedPassword = userPasswordSchema.safeParse(password);
-
-    if (!parsedId.success) {
-      console.error(parsedId.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    if (!parsedEmail.success) {
-      console.error(parsedEmail.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    if (!parsedPassword.success) {
-      console.error(parsedPassword.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
-      console.error("User not found.");
       res.status(404).json({ message: "User not found." });
       return;
     }
 
-    if (user.email === parsedEmail.data) {
-      console.error("Provided email is already user's current email.");
-      res
-        .status(400)
-        .json({ message: "Provided email is already user's current email." });
-      return;
-    }
-
     const existingUser = await prisma.user.findUnique({
-      where: { email: parsedEmail.data },
+      where: { email: data.email },
     });
-
     if (existingUser) {
-      console.error("User with this email already exists.");
-      res.status(403).json({ message: "Forbidden" });
+      res.status(409).json({ message: "User with this email already exists." });
       return;
     }
 
-    const passwordIsValid = await bcrypt.compare(
-      parsedPassword.data,
-      user.password
-    );
-
+    const passwordIsValid = await bcrypt.compare(data.password, user.password);
     if (!passwordIsValid) {
-      console.error("Passwords do not match.");
-      res.status(403).json({ message: "Forbidden" });
+      res.status(401).json({ message: "Incorrect password." });
       return;
     }
-
-    const updateData: any = {};
-    if (parsedEmail.data) updateData.email = parsedEmail.data;
 
     const updatedUser = await prisma.user.update({
-      where: { id: parsedId.data },
-      data: updateData,
+      where: { id: userId },
+      data: { email: !!data.email ? data.email : user.email },
       select: {
         id: true,
         email: true,
@@ -242,45 +196,34 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const parsedId = idSchema.safeParse(req.params.id);
+  if (!parsedId.success) {
+    console.error("Error parsing request:", parsedId.error);
+    res.status(404).json({ message: "Request Parsing Error" });
+    return;
+  }
+
+  const { data } = parsedId;
 
   try {
-    const parsedId = userIdSchema.safeParse(id);
-
-    if (!parsedId.success) {
-      console.error(parsedId.error);
-      res.status(400).json({ message: "Controller Parsing Error" });
-      return;
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: parsedId.data },
-    });
-
+    const user = await prisma.user.findUnique({ where: { id: data } });
     if (!user) {
-      console.error("User not found.");
       res.status(404).json({ message: "User not found." });
       return;
     }
 
-    deleteFolder(parsedId.data);
+    await deleteFolder(data);
+    await prisma.file.deleteMany({ where: { userId: data } });
+    await prisma.user.delete({ where: { id: data } });
 
-    await prisma.file.deleteMany({
-      where: { userId: parsedId.data },
-    });
-
-    await prisma.user.delete({
-      where: { id: parsedId.data },
-    });
-
-    res.status(200).json({ message: "User deleted successfully." });
+    res.sendStatus(204);
   } catch (error) {
     console.error("Error deleting user:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

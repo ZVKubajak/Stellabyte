@@ -1,11 +1,11 @@
 import { Router } from "express";
 import apiRoutes from "./api/index";
-import { authRouter } from "./api/authRoutes";
+import authRoutes from "./authRoutes";
 import { authenticateToken } from "../utils/auth";
 
 const router = Router();
 
 router.use("/api", authenticateToken, apiRoutes);
-router.use("/auth", authRouter);
+router.use("/auth", authRoutes);
 
 export default router;

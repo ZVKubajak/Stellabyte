@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 import {
   getUsers,
   getUserById,
@@ -8,24 +8,24 @@ import {
   deleteUser,
 } from "../../controllers/userController";
 
-const router = express.Router();
+const router = Router();
 
-// GET ALL USERS
+// Get all user entries.
 router.get("/", getUsers);
 
-// GET USER BY ID
-router.get("/id/:id", getUserById);
+// GET a user entry by ID.
+router.get("/:id", getUserById);
 
-// GET USER BY EMAIL
+// Get a user entry by its email.
 router.get("/email/:email", getUserByEmail);
 
-// CREATE USER
+// Create a user entry.
 router.post("/", createUser);
 
-// UPDATE USER
-router.put("/:id", updateUser);
+// Update a user entry.
+router.put("/", updateUser);
 
-// DELETE USER
+// Delete a user entry.
 router.delete("/:id", deleteUser);
 
 export { router as userRouter };

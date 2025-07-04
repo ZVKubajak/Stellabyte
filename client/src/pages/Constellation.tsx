@@ -1,33 +1,34 @@
-import { useState, useEffect, useRef } from "react";
-import { useLocation, Link } from "react-router-dom";
-import starAuth from "../utils/star";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import starToken from "../tokens/starToken";
 import {
-  handleStarQuantity,
+  handleCenterStar,
   handleConvertArray,
   handleObjectConversion,
-  handleCenterStar,
-} from "../utils/helperFunctions";
+  handleStarQuantity,
+} from "../helpers/helperFunctions";
 
-interface IStar {
+type StarProps = {
   x: number;
   y: number;
   color: string;
-}
+};
 
-interface ICenterStar {
+type CenterStarProps = {
   starSize: number;
   color: string;
-}
+};
 
 const Constellation = () => {
-  const [stars, setStars] = useState<IStar[]>([]);
-  const [centerStar, setCenterStar] = useState<ICenterStar | null>(null);
+  const location = useLocation();
+  const [stars, setStars] = useState<StarProps[]>([]);
+  const [centerStar, setCenterStar] = useState<CenterStarProps | null>(null);
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const location = useLocation();
   const { fileSize = 1000, fileType = "unknown" } = location.state || {};
 
-  starAuth.deleteStarToken();
+  starToken.remove();
 
   useEffect(() => {
     const generateStars = () => {
@@ -35,9 +36,7 @@ const Constellation = () => {
       return handleObjectConversion(handleConvertArray(amount.starAmount));
     };
 
-    const generateCenterStar = () => {
-      return handleCenterStar(fileSize, fileType);
-    };
+    const generateCenterStar = () => handleCenterStar(fileSize, fileType);
 
     setStars(generateStars());
     setCenterStar(generateCenterStar());

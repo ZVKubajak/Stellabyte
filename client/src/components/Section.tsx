@@ -1,6 +1,8 @@
-import { ISection } from "../interfaces/section";
+type SectionProps = {
+  text: string;
+};
 
-const Section = ({ text }: ISection) => {
+const Section = ({ text }: SectionProps) => {
   return (
     <div className="relative mx-4 p-1 rounded testing xl:h-[200px] xl:w-[325px] xl:flex xl:items-center 2xl:w-[400px]">
       {/* Background div */}

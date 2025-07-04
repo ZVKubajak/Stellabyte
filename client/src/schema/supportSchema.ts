@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const supportSchema = z.object({
+export type Support = z.infer<typeof supportSchema>;
+
+const supportSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required.")
@@ -17,3 +19,5 @@ export const responseSchema = z.object({
   message: z.string(),
   success: z.boolean(),
 });
+
+export default supportSchema;
