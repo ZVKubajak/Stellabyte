@@ -75,12 +75,12 @@ export const getFileById = async (req: Request, res: Response) => {
 };
 
 export const uploadFile = async (req: Request, res: Response) => {
-  if (!req.userId) {
+  if (!req.auth) {
     res.status(400).json({ message: "Missing auth token ID." });
     return;
   }
 
-  const { userId } = req;
+  const { userId } = req.auth;
 
   if (!req.file) {
     res.status(400).json({ message: "No file uploaded." });
@@ -131,12 +131,12 @@ export const downloadFile = async (req: Request, res: Response) => {
 
   const { data: fileId } = parsedId;
 
-  if (!req.userId) {
+  if (!req.auth) {
     res.status(400).json({ message: "Missing auth token ID." });
     return;
   }
 
-  const { userId } = req;
+  const { userId } = req.auth;
 
   try {
     const file = await prisma.file.findUnique({ where: { id: fileId } });
@@ -186,12 +186,12 @@ export const removeFile = async (req: Request, res: Response) => {
 
   const { data: fileId } = parsedId;
 
-  if (!req.userId) {
+  if (!req.auth) {
     res.status(400).json({ message: "Missing auth token ID." });
     return;
   }
 
-  const { userId } = req;
+  const { userId } = req.auth;
 
   try {
     const file = await prisma.file.findUnique({ where: { id: fileId } });

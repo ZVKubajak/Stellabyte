@@ -1,43 +1,51 @@
 import { useState } from "react";
-import { z } from "zod";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { supportSchema, responseSchema } from "../schema/supportSchema";
-import auth from "../utils/auth";
-import Swal from "sweetalert2";
-
-type TSupportSchema = z.infer<typeof supportSchema>;
+import supportSchema, {
+  responseSchema,
+  Support as SupportType,
+} from "../schema/supportSchema";
+import authToken from "../tokens/authToken";
 
 const Support = () => {
+  const navigate = useNavigate();
   const [hasEmail, setHasEmail] = useState(true);
-  const [generalError, setGeneralError] = useState<string>("");
+  const [generalError, setGeneralError] = useState("");
 
   let userEmail = "";
 
   try {
-    const profile = auth.getProfile();
-
-    if (!profile) throw new Error("Profile not found.");
-
+    const profile = authToken.getProfile();
+    if (!profile) throw new Error("User profile not found.");
     userEmail = profile.email;
   } catch (error) {
-    console.error("Error getting user profile:", error);
+    console.error("[Support.tsx] Failed to fetch user's profile:", error);
+    Swal.fire({
+      title: "Whoops!",
+      text: "An unknown error has occurred. Please try again later.",
+      icon: "warning",
+      background: "#09203f",
+      color: "#fff",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Return to Home",
+    }).then(() => navigate("/"));
   }
 
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
+    handleSubmit,
     reset,
-  } = useForm<TSupportSchema>({
-    resolver: zodResolver(supportSchema),
-  });
+  } = useForm<SupportType>({ resolver: zodResolver(supportSchema) });
 
-  const onSubmit = async (data: TSupportSchema) => {
+  const handleForm = handleSubmit(async (data) => {
+    let formEmail = userEmail;
+    if (data.email) formEmail = data.email;
+
     try {
-      let formEmail = userEmail;
-      if (data.email) formEmail = data.email;
-
       const webForm = new FormData();
       webForm.append("name", data.name);
       webForm.append("email", formEmail);
@@ -52,9 +60,7 @@ const Support = () => {
       const result = await response.json();
       const parsedResult = responseSchema.safeParse(result);
 
-      if (!parsedResult.success) {
-        throw Error;
-      }
+      if (!parsedResult.success) throw new Error("Response Error");
 
       if (parsedResult.data.success) {
         Swal.fire({
@@ -78,9 +84,10 @@ const Support = () => {
 
       setGeneralError("");
     } catch (error) {
+      console.error("[Support.tsx] Failed to send form:", error);
       setGeneralError("An error has occurred. Please try again.");
     }
-  };
+  });
 
   return (
     <div className="h-screen p-4 max-w-3xl mx-auto mb-[200px]">
@@ -93,7 +100,7 @@ const Support = () => {
           Need help? Fill out the form below, and our team will get back to you
           as soon as possible.
         </p>
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleForm}>
           <div>
             <label
               htmlFor="name"
@@ -101,16 +108,19 @@ const Support = () => {
             >
               Name
             </label>
+
             <input
               type="text"
               placeholder="Enter Name"
               {...register("name")}
               className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
             />
+
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
+
           <div>
             <label
               htmlFor="email"
@@ -118,6 +128,7 @@ const Support = () => {
             >
               Email
             </label>
+
             {hasEmail && userEmail ? (
               <div className="flex flex-row items-center justify-between border border-[whitesmoke] rounded p-2">
                 <span className="truncate text-[15px] text-[whitesmoke]">
@@ -142,12 +153,14 @@ const Support = () => {
                 }}
               />
             )}
+
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
+
           <div>
             <label
               htmlFor="message"
@@ -155,11 +168,13 @@ const Support = () => {
             >
               Message
             </label>
+
             <textarea
               placeholder="Tell us about your issue..."
               {...register("message")}
               className="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300 min-h-[100px] max-h-[100px] h-[100px]"
             ></textarea>
+
             {errors.message && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.message.message}

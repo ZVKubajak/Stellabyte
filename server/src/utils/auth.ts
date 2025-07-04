@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authSchema } from "../schema/userSchema";
+import { Auth } from "../types";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -22,8 +23,8 @@ export const authenticateToken = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const userId = jwt.verify(token, secretKey) as string;
-    req.userId = userId;
+    const payload = jwt.verify(token, secretKey) as Auth;
+    req.auth = payload;
 
     next();
   } catch (error) {
@@ -57,13 +58,19 @@ export const signup = async (req: Request, res: Response) => {
       data: { email: data.email, password: hashedPassword },
       select: {
         id: true,
+        email: true,
         myFiles: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    const token = jwt.sign(newUser.id, secretKey, { expiresIn: "7d" });
+    const payload: Auth = {
+      userId: newUser.id,
+      email: newUser.email,
+    };
+
+    const token = jwt.sign(payload, secretKey, { expiresIn: "7d" });
 
     res.status(201).json(token);
   } catch (error) {
@@ -95,7 +102,12 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign(user.id, secretKey, { expiresIn: "7d" });
+    const payload: Auth = {
+      userId: user.id,
+      email: user.email,
+    };
+
+    const token = jwt.sign(payload, secretKey, { expiresIn: "7d" });
 
     res.status(201).json(token);
   } catch (error) {

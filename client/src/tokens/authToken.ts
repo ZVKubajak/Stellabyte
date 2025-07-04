@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 class AuthToken {
   private static key = "auth_token";
 
@@ -25,6 +27,17 @@ class AuthToken {
     } catch (error) {
       console.error("[AuthToken] Error removing token:", error);
       throw error;
+    }
+  }
+
+  getProfile() {
+    try {
+      const token = this.get();
+      if (!token) throw new Error("Token not found.");
+      return jwtDecode<{ userId: string; email: string }>(token);
+    } catch (error) {
+      console.error("[AuthToken] Error fetching user ID:", error);
+      return null;
     }
   }
 }

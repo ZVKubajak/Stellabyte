@@ -1,31 +1,36 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getUserFiles, uploadFile } from "../services/api/fileServices";
-import auth from "../utils/auth";
-import starAuth from "../utils/star";
-import Swal from "sweetalert2";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
+import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { faCheck, faFileArrowUp } from "@fortawesome/free-solid-svg-icons";
+import authToken from "../tokens/authToken";
+import starToken from "../tokens/starToken";
+import { getUserFiles, uploadFile } from "../services/api/fileServices";
 
 const Upload = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [generalError, setGeneralError] = useState<string>("");
-
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [generalError, setGeneralError] = useState("");
 
   let userId = "";
 
   try {
-    const profile = auth.getProfile();
-
-    if (!profile) throw new Error("Profile not found.");
-
-    userId = profile.id;
+    const profile = authToken.getProfile();
+    if (!profile) throw new Error("User Profile not found.");
+    userId = profile.userId;
   } catch (error) {
-    console.error("Error getting user profile:", error);
+    console.error("[Upload.tsx] Failed to fetch user's profile:", error);
+    Swal.fire({
+      title: "Whoops!",
+      text: "An unknown error has occurred. Please try again later.",
+      icon: "warning",
+      background: "#09203f",
+      color: "#fff",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Return to Home",
+    }).then(() => navigate("/"));
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,28 +40,26 @@ const Upload = () => {
     }
   };
 
-  const onUpload = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleUpload = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    if (!selectedFile) {
+      setGeneralError("No file selected.");
+      return;
+    }
+
     try {
-      if (!selectedFile) {
-        setGeneralError("No file selected.");
-        return;
-      }
-
       const files = await getUserFiles(userId);
-      if (!files) throw Error;
+      if (!files) throw new Error("No files found.");
 
-      if (Array.isArray(files)) {
-        for (let i = 0; i < files.length; i++) {
-          if (selectedFile.name.trim() === files[i].fileName) {
-            setGeneralError("File name must be unique.");
-            return;
-          }
+      for (let i = 0; i < files.length; i++) {
+        if (selectedFile.name.trim() === files[i].name) {
+          setGeneralError("File name must be unique.");
+          return;
         }
       }
 
-      const uploadedFile = await uploadFile(selectedFile, userId);
+      const uploadedFile = await uploadFile(selectedFile);
 
       Swal.fire({
         title: "File Uploaded!",
@@ -74,10 +77,8 @@ const Upload = () => {
           navigate("/storage");
         } else {
           if (result.dismiss === Swal.DismissReason.cancel) {
-            starAuth.generateStarToken();
-            navigate("/constellation", {
-              state: uploadedFile,
-            });
+            starToken.generate();
+            navigate("/constellation", { state: uploadedFile });
           } else {
             setSelectedFile(null);
             setGeneralError("");
@@ -85,6 +86,7 @@ const Upload = () => {
         }
       });
     } catch (error) {
+      console.error("[Upload.tsx] Failed to upload file:", error);
       setGeneralError("An error has occurred. Please try again.");
       Swal.fire({
         title: "Whoops!",
@@ -113,8 +115,9 @@ const Upload = () => {
               onChange={handleFileChange}
               className="flex-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#286386] focus:border-[#286386]"
             />
+
             <button
-              onClick={(e) => onUpload(e)}
+              onClick={(e) => handleUpload(e)}
               className="py-2 px-[13px] bg-[whitesmoke] border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#286386] focus:border-[#286386]"
             >
               <FontAwesomeIcon
@@ -123,6 +126,7 @@ const Upload = () => {
               />
             </button>
           </Form.Group>
+
           {generalError && (
             <p className="text-red-500 text-sm text-left mt-1 ml-10">
               {generalError}

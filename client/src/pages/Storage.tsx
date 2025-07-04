@@ -1,53 +1,36 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  getUserFiles,
-  downloadFile,
-  removeFile,
-} from "../services/api/fileServices";
-import { fileSchema } from "../schema/fileSchema";
-import { z } from "zod";
-import auth from "../utils/auth";
-import starAuth from "../utils/star";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileArrowDown,
   faMeteor,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-
-type TFileSchema = z.infer<typeof fileSchema>;
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import {
+  downloadFile,
+  getUserFiles,
+  removeFile,
+} from "../services/api/fileServices";
+import { File } from "../schema/fileSchema";
+import authToken from "../tokens/authToken";
+import starToken from "../tokens/starToken";
 
 const Storage = () => {
-  const [userFiles, setUserFiles] = useState<TFileSchema[]>([]);
-
   const navigate = useNavigate();
-
-  let userId = "";
-
-  try {
-    const profile = auth.getProfile();
-
-    if (!profile) throw new Error("Profile not found");
-
-    userId = profile.id;
-  } catch (error) {
-    console.error("Error getting user profile:", error);
-  }
+  const [userFiles, setUserFiles] = useState<File[]>([]);
 
   const fetchFiles = async () => {
     try {
-      const files = await getUserFiles(userId);
+      const profile = authToken.getProfile();
+      if (!profile) throw new Error("User profile not found.");
+
+      const files = await getUserFiles(profile.userId);
       if (!files) throw new Error("Files not found.");
 
-      if (Array.isArray(files)) {
-        setUserFiles(files);
-      } else {
-        setUserFiles([]);
-      }
+      setUserFiles(files);
     } catch (error) {
-      console.error("Error fetching files:", error);
+      console.error("[Storage.tsx] Failed to fetch files:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An unknown error has occurred. Please try again later.",
@@ -57,28 +40,20 @@ const Storage = () => {
         allowOutsideClick: false,
         allowEscapeKey: false,
         confirmButtonText: "Return to Home",
-      }).then(() => {
-        navigate("/");
-      });
+      }).then(() => navigate("/"));
     }
   };
 
-  const constellizeFile = (file: TFileSchema) => {
-    starAuth.generateStarToken();
-    navigate("/constellation", {
-      state: file,
-    });
+  const constellizeFile = (file: File) => {
+    starToken.generate();
+    navigate("/constellation", { state: file });
   };
 
-  const downloadUserFile = async (
-    id: string,
-    userId: string,
-    fileName: string
-  ) => {
+  const downloadUserFile = async (id: string, fileName: string) => {
     try {
-      await downloadFile(id, userId, fileName);
+      await downloadFile(id, fileName);
     } catch (error) {
-      console.error("Error downloading user's file:", error);
+      console.error("Failed to download user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
@@ -89,12 +64,12 @@ const Storage = () => {
     }
   };
 
-  const removeUserFile = async (id: string, userId: string) => {
+  const removeUserFile = async (id: string) => {
     try {
-      await removeFile(id, userId);
-      fetchFiles();
+      await removeFile(id);
+      await fetchFiles();
     } catch (error) {
-      console.error("Error removing user's file:", error);
+      console.error("Failed to remove user's file:", error);
       Swal.fire({
         title: "Whoops!",
         text: "An error has occurred. Please try again.",
@@ -129,11 +104,9 @@ const Storage = () => {
 
               <div className="flex relative">
                 <div className="w-4/5">
-                  <p className="text-[whitesmoke] font-semibold">
-                    {file.fileName}
-                  </p>
-                  <p className="text-[whitesmoke] m-0">{file.fileType}</p>
-                  <p className="text-[whitesmoke] m-0">{file.fileSize} Bytes</p>
+                  <p className="text-[whitesmoke] font-semibold">{file.name}</p>
+                  <p className="text-[whitesmoke] m-0">{file.type}</p>
+                  <p className="text-[whitesmoke] m-0">{file.size} Bytes</p>
                 </div>
                 <div className="w-1/5 text-xl space-x-3 text-right">
                   <FontAwesomeIcon
@@ -141,16 +114,16 @@ const Storage = () => {
                     onClick={() => constellizeFile(file)}
                     className="text-[whitesmoke] cursor-pointer"
                   />
+
                   <FontAwesomeIcon
                     icon={faFileArrowDown}
-                    onClick={() =>
-                      downloadUserFile(file.id, file.userId, file.fileName)
-                    }
+                    onClick={() => downloadUserFile(file.id, file.name)}
                     className="text-[whitesmoke] cursor-pointer"
                   />
+
                   <FontAwesomeIcon
                     icon={faXmark}
-                    onClick={() => removeUserFile(file.id, file.userId)}
+                    onClick={() => removeUserFile(file.id)}
                     className="text-[whitesmoke] cursor-pointer"
                   />
                 </div>
