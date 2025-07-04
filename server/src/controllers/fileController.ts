@@ -99,7 +99,6 @@ export const uploadFile = async (req: Request, res: Response) => {
       Key: `${userId}/${req.file.originalname}`,
       ContentType: req.file.mimetype,
       Body: req.file.buffer,
-      ACL: "public-read",
     });
 
     await s3Client.send(command);
@@ -152,7 +151,7 @@ export const downloadFile = async (req: Request, res: Response) => {
 
     const command = new GetObjectCommand({
       Bucket: bucket,
-      Key: `${userId}/${file.type}`,
+      Key: `${userId}/${file.name}`,
     });
 
     const { Body, ContentType, ContentLength } = await s3Client.send(command);

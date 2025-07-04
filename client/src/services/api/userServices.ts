@@ -1,5 +1,6 @@
 import api from "../api";
 import { User, UpdateUser } from "../../schema/userSchema";
+import authToken from "../../tokens/authToken";
 
 export const getUserById = async (id: string) => {
   try {
@@ -23,7 +24,10 @@ export const getUserByEmail = async (email: string) => {
 
 export const updateUser = async (data: UpdateUser) => {
   try {
-    const response = await api.put<User>(`/users/`, data);
+    const response = await api.put<User>(`/users/`, {
+      email: data.newEmail,
+      password: data.password,
+    });
     return response.data;
   } catch (error) {
     console.error("[services] updateUser Error:", error);

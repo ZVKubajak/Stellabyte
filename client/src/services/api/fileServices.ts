@@ -26,7 +26,7 @@ export const uploadFile = async (file: File) => {
     const data = new FormData();
     data.append("file", file);
 
-    const response = await api.post<FileType>(`/api/files/`, data, {
+    const response = await api.post<FileType>(`/files/`, data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -38,7 +38,7 @@ export const uploadFile = async (file: File) => {
 
 export const downloadFile = async (id: string, fileName: string) => {
   try {
-    const response = await api.get(`/api/files/download/${id}`, {
+    const response = await api.get(`/files/download/${id}`, {
       responseType: "blob",
     });
 
@@ -64,7 +64,7 @@ export const downloadFile = async (id: string, fileName: string) => {
 
 export const removeFile = async (id: string) => {
   try {
-    await api.delete(`/api/files/${id}`);
+    await api.delete(`/files/${id}`);
   } catch (error) {
     console.error("[services] removeFile Error:", error);
     throw error;

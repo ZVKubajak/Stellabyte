@@ -3,7 +3,7 @@ import { Signup, Login } from "../schema/authSchema";
 import authToken from "../tokens/authToken";
 
 const auth: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL: "http://localhost:3001/auth",
   timeout: 30000,
 });
 

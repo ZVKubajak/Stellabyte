@@ -19,7 +19,6 @@ export const createUserSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  id: idSchema,
   email: emailSchema,
   password: passwordSchema,
 });

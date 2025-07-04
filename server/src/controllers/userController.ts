@@ -144,6 +144,13 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+  if (!req.auth) {
+    res.status(400).json({ message: "Missing auth token ID." });
+    return;
+  }
+
+  const { userId } = req.auth;
+
   const parsedReq = updateUserSchema.safeParse(req.body);
   if (!parsedReq.success) {
     console.error("Error parsing request:", parsedReq.error);
@@ -154,7 +161,7 @@ export const updateUser = async (req: Request, res: Response) => {
   const { data } = parsedReq;
 
   try {
-    const user = await prisma.user.findUnique({ where: { id: data.id } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       res.status(404).json({ message: "User not found." });
       return;
@@ -175,7 +182,7 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: data.id },
+      where: { id: userId },
       data: { email: !!data.email ? data.email : user.email },
       select: {
         id: true,

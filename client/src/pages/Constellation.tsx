@@ -6,7 +6,7 @@ import {
   handleConvertArray,
   handleObjectConversion,
   handleStarQuantity,
-} from "../utils/helperFunctions";
+} from "../helpers/helperFunctions";
 
 type StarProps = {
   x: number;
