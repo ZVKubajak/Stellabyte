@@ -1,8 +1,8 @@
 import { z } from "zod";
+import idSchema from "./idSchema";
 
-export const userIdSchema = z.string().length(24);
-export const userEmailSchema = z.string().email();
-export const userPasswordSchema = z
+export const emailSchema = z.string().email().max(200);
+export const passwordSchema = z
   .string()
   .min(8)
   .max(20)
@@ -10,3 +10,14 @@ export const userPasswordSchema = z
   .regex(/[A-Z]/)
   .regex(/\d/)
   .regex(/[@$!%*?&]/);
+
+export const createUserSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+export const updateUserSchema = z.object({
+  id: idSchema,
+  email: emailSchema,
+  password: passwordSchema,
+});
