@@ -28,9 +28,7 @@ const Login = () => {
     try {
       const token = await login(data);
 
-      if (!token) {
-        throw Error;
-      }
+      if (!token) throw new Error("Token not found.")
 
       auth.login(token);
       navigate("/");
@@ -38,6 +36,7 @@ const Login = () => {
       setGeneralError("");
       reset();
     } catch (error) {
+      console.error("Error submitting log in info:", error);
       setGeneralError("An error occurred. Please try again.");
     }
   };

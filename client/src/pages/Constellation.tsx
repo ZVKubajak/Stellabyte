@@ -8,20 +8,20 @@ import {
   handleCenterStar,
 } from "../utils/helperFunctions";
 
-interface IStar {
+type StarProps = {
   x: number;
   y: number;
   color: string;
-}
+};
 
-interface ICenterStar {
+type CenterStarProps = {
   starSize: number;
   color: string;
-}
+};
 
 const Constellation = () => {
-  const [stars, setStars] = useState<IStar[]>([]);
-  const [centerStar, setCenterStar] = useState<ICenterStar | null>(null);
+  const [stars, setStars] = useState<StarProps[]>([]);
+  const [centerStar, setCenterStar] = useState<CenterStarProps | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const location = useLocation();
