@@ -26,21 +26,21 @@ const Constellation = () => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { fileSize = 1000, fileType = "unknown" } = location.state || {};
+  const { size = 1000, type = "unknown" } = location.state || {};
 
   starToken.remove();
 
   useEffect(() => {
     const generateStars = () => {
-      const amount = handleStarQuantity(fileSize);
+      const amount = handleStarQuantity(size);
       return handleObjectConversion(handleConvertArray(amount.starAmount));
     };
 
-    const generateCenterStar = () => handleCenterStar(fileSize, fileType);
+    const generateCenterStar = () => handleCenterStar(size, type);
 
     setStars(generateStars());
     setCenterStar(generateCenterStar());
-  }, [fileSize, fileType]);
+  }, [size, type]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
