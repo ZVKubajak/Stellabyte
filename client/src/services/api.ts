@@ -6,7 +6,8 @@ import axios, {
 import authToken from "../tokens/authToken";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL: "https://stellabyte-production.up.railway.app",
+  // baseURL: "http://localhost:3001/api",
   timeout: 60000,
 });
 
