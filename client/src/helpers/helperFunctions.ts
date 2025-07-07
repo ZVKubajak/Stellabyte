@@ -15,6 +15,7 @@ const fileTypeColors = {
 const valuesArray = Object.values(fileTypeColors);
 
 export const handleStarQuantity = (fileSize: number) => {
+  console.log("FILE SIZE:", fileSize);
   let starAmount: number;
   let centerStarSize: number;
 
@@ -36,6 +37,7 @@ export const handleStarQuantity = (fileSize: number) => {
 };
 
 export const handleStarColor = (fileType: string) => {
+  console.log("FILE TYPE:", fileType);
   if (fileType.includes("text/")) {
     return fileTypeColors.text;
   } else if (fileType.includes("image/")) {
@@ -86,6 +88,8 @@ export const handleObjectConversion = (arr: number[]) => {
 };
 
 export const handleCenterStar = (fileSize: number, fileType: string) => {
+  console.log("CENTER SIZE:", fileSize);
+  console.log("CENTER TYPE:", fileType);
   const size = handleStarQuantity(fileSize);
   const color = handleStarColor(fileType);
   const starSize = size.centerStarSize;
