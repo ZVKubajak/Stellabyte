@@ -3,8 +3,7 @@ import { Signup, Login } from "../schema/authSchema";
 import authToken from "../tokens/authToken";
 
 const auth: AxiosInstance = axios.create({
-  // baseURL: "https://stellabyte-production.up.railway.app/auth",
-  baseURL: "http://localhost:3001/auth",
+  baseURL: "https://stellabyte-production.up.railway.app/auth",
   timeout: 30000,
 });
 
