@@ -1,7 +1,7 @@
  # Stellabyte
 
 ## Description
-Stellabyte is a next-generation cloud storage platform built on Amazon S3 for scalable storage and Prisma ORM for efficient database management, combining cutting-edge technology with a celestial aesthetic. Custom cosmic-themed artwork transforms file management into an immersive, out-of-this-world experience, blending functionality and creativity for storing memories or organizing documents.
+Stellabyte is a cloud storage platform built on Amazon S3 and Prisma + MongoDB. User's can store files while turning them into artwork with a celestial aesthetic.
 
 ## Table of Contents
 - [Usage](#usage)
@@ -10,9 +10,9 @@ Stellabyte is a next-generation cloud storage platform built on Amazon S3 for sc
 - [Credits](#credits)
 
 ## Usage
-Checkout the deployed site at [https://stellabyte-production.up.railway.app](https://stellabyte-production.up.railway.app). Create an account and upload a file up to 50MB to the cloud. When the upload process is finished, users can view their file's generated artwork.
+Checkout the deployed site at [https://stellabyte-production.up.railway.app](https://stellabyte-production.up.railway.app). Create an account and upload files up to 50MB each to the cloud. When the upload process is finished, users can view their file's generated artwork.
 
-Each artwork contains a bunch of colorful little stars and one big center star. The center star's color is determined by the uploaded file's MIME type, and the size is determined by the file size. Each little star also represents part of the file size, but the color is random. The nebulas are randomly generated.
+Each artwork contains a bunch of colorful little stars and one big center star. The center star's color is determined by the uploaded file's MIME type, and the size is determined by the file's size. Each little star also represents part of the file's size, but the colors are random. The nebulas are randomly generated.
 
 Users can also download the files they uploaded at any time, or delete them from the cloud storage.
 
@@ -26,20 +26,40 @@ Users can also download the files they uploaded at any time, or delete them from
 ![image](https://github.com/user-attachments/assets/3030f490-fb26-4161-ac39-c01c8cd7bf33)
 
 ## Installation
-Requirements:
-* npm v10.9.2
-* MongoDB Database URL
-* Port Number
-* Access Key (S3)
-* Secret Access Key (S3)
-* Bucket Name (S3)
-* JWT Secret Key
+You will need the following ENV variables:
+```
+ACCESS_KEY (AWS S3)
+SECRET_ACCESS_KEY (AWS S3)
+BUCKET_NAME (AWS S3)
+DATABASE_URL (for Prisma)
+JWT_SECRET_KEY
+PORT
+```
 
-To install the source code for **Stellabyte**, clone the repository locally using `git clone git@github.com:ZVKubajak/Stellabyte.git` and navigate to the project directory with `cd Stellabyte`.
+Quickstart:
+```
+git clone git@github.com:ZVKubajak/Stellabyte.git
+cd Stellabyte/
+npm i
+npm run start:dev
+```
 
-Install all dependencies by running `npm run install`. Navigate to the server with `cd server`, and create a .env file with variables `DATABASE_URL`, `PORT`, `ACCESS_KEY`, `SECRET_ACCESS_KEY`, `BUCKET_NAME`, and `JWT_SCRET_KEY`. Add the requirements respectively.
+Make sure to change out the Axios base URLs for `/api` and `/auth` in the client:
+```
+/client/src/services/api.ts & /client/src/services/authServices.ts
 
-Navigate back to the root of the project with `cd ..`. You might also need to add localhost prefixes in front of the client endpoints. Then start the development server with `npm run start:dev`. You're now ready to explore and use the app locally!
+const api: AxiosInstance = axios.create({
+  baseURL: "https://stellabyte-production.up.railway.app/api", // Change this
+  timeout: 60000,
+});
+
+=====
+
+const api: AxiosInstance = axios.create({
+  baseURL: "http://localhost:<YOUR PORT>/api", // To this
+  timeout: 60000,
+});
+```
 
 ## Questions
 If you have any questions, you can reach out to the team at [zvkubajak@gmail.com](mailto:zvkubajak@gmail.com) and [bryceberczik.dev@gmail.com](mailto:bryceberczik.dev@gmail.com).
